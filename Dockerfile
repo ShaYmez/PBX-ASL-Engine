@@ -1,12 +1,11 @@
 FROM amd64/debian:buster
 
-ARG USER_ID
-ARG GROUP_ID
+ENTRYPOINT ["/entrypoint"]
 
-RUN addgroup --gid $GROUP_ID user
-RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID user
+RUN adduser -D -u 54000 radio
 
 # Install build dependencies
+
 RUN apt-get update && apt-get -y install \
     build-essential \
     devscripts \
@@ -37,10 +36,5 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
     debhelper quilt zlib1g-dev libreadline-gplv2-dev libgsm1-dev libssl-dev libtonezone-dev libasound2-dev libpq-dev unixodbc-dev libpri-dev libvpb-dev asl-dahdi-source autotools-dev libnewt-dev libsqlite-dev libspeex-dev libspeexdsp-dev graphviz libcurl4-openssl-dev doxygen gsfonts libpopt-dev libiksemel-dev freetds-dev libvorbis-dev libsnmp-dev libcap-dev libi2c-dev libjansson-dev libusb-dev\
     --no-install-recommends
 
-# Import entrypoint script
-COPY ./entrypoint.sh /entrypoint.sh
-
-# Make Executable
-RUN chmod +x /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+COPY entrypoint /entrypoint
+USER radio
