@@ -2,7 +2,11 @@ FROM amd64/debian:buster
 
 ENTRYPOINT ["/entrypoint"]
 
-RUN adduser -D -u 54000 radio
+ARG USER_ID
+ARG GROUP_ID
+
+RUN addgroup --gid $GROUP_ID user
+RUN adduser --disabled-password --uid $USER_ID --gid $GROUP_ID user
 
 # Install build dependencies
 
