@@ -3,9 +3,6 @@ FROM amd64/debian:buster
 ENTRYPOINT ["/entrypoint"]
 
 
-RUN addgroup --gid 54000
-RUN adduser --disabled-password --gecos '' --uid radio --gid 54000
-
 # Install build dependencies
 
 RUN apt-get update && apt-get -y install \
@@ -39,4 +36,3 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
     --no-install-recommends
 
 COPY entrypoint /entrypoint
-USER radio
