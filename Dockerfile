@@ -6,7 +6,7 @@ ARG USER_ID
 ARG GROUP_ID
 
 RUN addgroup --gid $GROUP_ID user
-RUN adduser --disabled-password --uid $USER_ID --gid $GROUP_ID user
+RUN adduser --disabled-password --uid $USER_ID --gid $GROUP_ID 54000
 
 # Install build dependencies
 
