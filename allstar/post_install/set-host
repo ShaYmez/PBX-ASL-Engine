@@ -1,0 +1,90 @@
+#!/bin/sh
+# original script by N4IRS
+# mod4whiptail N8THN
+# V1.0 Feb 23, 2018
+# release date 20180323-1
+# Major rewrite WD6AWP 3/27/2021
+
+#check if root or sudo
+if [ `whoami` != root ]; then
+    whiptail --msgbox "This script must be run as root or with sudo." 12 60
+    exit
+fi
+
+# set variables for current values
+hostsfile=/etc/hosts
+hostnamefile=/etc/hostname
+FQDN=`cat $hostnamefile`
+HOSTNAME=`echo $FQDN | awk --field-separator . '{ print $1 }'`
+DOMAIN=`echo $FQDN | awk --field-separator . '{ $1=""; print }'`
+
+
+do_intro() {
+    #MSG="Existing hostname is $HOSTNAME\n"
+    #MSG="${MSG}Existing Domain Name is $DOMAIN\n"
+    MSG="The Fully Qualified Domain Name for this Linux server is $FQDN\n\n"
+    MSG="${MSG}Do you want to change it?"
+    ANSWER=1
+    if (whiptail --title "Hostname Settings" --yesno  "${MSG}" 12 60) then
+        ANSWER=$?
+    fi
+    if [ "$ANSWER" = "1" ]; then #answered no
+        exit 0
+    fi
+}
+
+do_get_input() {
+    # great, now we have to do some work :)
+    #HOSTNAME=$(whiptail --inputbox "Enter new Hostname." 12 60 "$HOSTNAME" --title "Enter Hostname" 3>&1 1>&2 2>&3)
+    #DOMAIN=$(whiptail --inputbox "Enter new Domain or leave blank for none." 12 60 "$DOMAIN" --title "Enter Domain" 3>&1 1>&2 2>&3)
+    MSG="Enter new Fully Qualified Domain Name.\n\n"
+    MSG="${MSG}For example hotspots with no DNS name might be 'myhotspot' "
+    MSG="${MSG}or for systems with a resolable DNS name 'myserver.mydomain.com'."
+    FQDN=$(whiptail --inputbox  "${MSG}" 14 60 "$FQDN" --title "Enter FQDN" 3>&1 1>&2 2>&3)
+
+    do_confirm_input
+}
+
+do_confirm_input() {
+    #MSG="New hostname is $HOSTNAME\n"
+    #MSG="${MSG}New Domain is $DOMAIN\n"
+    MSG="New Fully Qualitified Domain Name is $FQDN\n\n"
+    MSG="${MSG}Is this new value OK?\n"
+
+    ANSWER=1
+    if (whiptail --title "Confirm New FQDN" --yesno "${MSG}" 12 60) then
+        ANSWER=$?
+    fi
+    if [ "$ANSWER" = "1" ]; then    #answered no
+        do_get_input
+    else
+        do_write
+    fi
+}
+
+do_write() {
+    # okay, make it so number one.  ..........................may have been watching star trek while writing this.
+    HOSTNAME=`echo $FQDN | awk --field-separator . '{ print $1 }'`
+    DOMAIN=`echo $FQDN | awk --field-separator . '{ $1=""; print }'`
+
+    echo $FQDN > $hostnamefile
+
+    echo "127.0.0.1         localhost" > $hostsfile
+    if [ -z "$DOMAIN" ]; then
+        echo "127.0.0.1         $FQDN" >> $hostsfile
+    else
+        echo "127.0.0.1         $FQDN   $HOSTNAME" >> $hostsfile
+    fi
+    echo >> $hostsfile
+    echo "# The following lines are desirable for IPv6 capable hosts" >> $hostsfile
+    echo "::1     localhost ip6-localhost ip6-loopback" >> $hostsfile
+    echo "ff02::1 ip6-allnodes" >> $hostsfile
+    echo "ff02::2 ip6-allrouters" >> $hostsfile
+    echo >> $hostsfile
+}
+
+if [ "$1" != 'nointro' ]; then
+    do_intro
+fi
+do_get_input
+exit 0
