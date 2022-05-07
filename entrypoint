@@ -33,5 +33,4 @@ for t in "$BUILD_TARGETS"; do
   mv *.build build/$BASENAME
   mv *.buildinfo build/$BASENAME
   mv *.changes build/$BASENAME
-  fi
 echo "done"
