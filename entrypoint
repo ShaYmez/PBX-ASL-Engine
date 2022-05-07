@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -o errexit
+
+if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+    echo "Not running as root"
+    echo "either run as root or with sudo"
+    exit
+fi
+
+distribution=buster
+
+# INSTALL gnupg needed for gpg.key
+[ ! -x "/usr/bin/gpg" ] && apt-get install gnupg -y
+
+# Add the backport repository, if needed to install monit
+if [ $(apt-cache policy monit | grep -c "Candidate: (none)") -eq 1 ] ; then
+        # add repository
+        printf "%s\n" "deb http://ftp.de.debian.org/debian buster-backports main" | tee /etc/apt/sources.list.d/buster-backports.list
+fi
+
+# INSTALL netstat needed by dvswitch.sh
+[ ! -x "/bin/netstat" ] && apt-get install net-tools -y
+
+# Check for rc.local and create if not found.
+FILE="/etc/rc.local"
+        if [ ! -f "$FILE" ] ; then
+		echo '#!/bin/sh -e' > $FILE
+		echo '' >> $FILE
+		echo 'exit 0' >> $FILE
+	   chmod +x $FILE
+        fi
+
+# Are the repos installed
+# Should this test for buster too?
+if [ -f /etc/apt/sources.list.d/dvswitch.list ]
+then
+    echo "The Repository file already exists, exiting"
+    exit 0
+fi
+
+wget -O - http://dvswitch.org/DVSwitch_Repository/dvswitch.gpg.key 2>/dev/null | apt-key add - > /dev/null 2>&1
+
+echo "# Official DVSwitch repository" >/etc/apt/sources.list.d/dvswitch.list
+echo "deb http://dvswitch.org/DVSwitch_Repository $distribution hamradio" >>/etc/apt/sources.list.d/dvswitch.list
+echo "#" >>/etc/apt/sources.list.d/dvswitch.list
+
+echo "download package information from all configured sources"
+apt-get update --allow-releaseinfo-change > /dev/null 2>&1
+apt-get update > /dev/null 2>&1
+apt-get install dvswitch-server
+apt-get install allstar
+
+done
