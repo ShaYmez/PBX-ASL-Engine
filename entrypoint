@@ -34,4 +34,4 @@ for t in "$BUILD_TARGETS"; do
   mv *.buildinfo build/$BASENAME
   mv *.changes build/$BASENAME
 done
-chown -R 54000 .
+chown -R user .
