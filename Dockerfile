@@ -36,3 +36,5 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
     --no-install-recommends
 
 COPY entrypoint /entrypoint
+# Make Executable
+RUN chmod +x /entrypoint
