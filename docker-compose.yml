@@ -1,0 +1,82 @@
+# PBX-ASL Engine
+
+
+version: '2.4'
+services:
+    pbx-asl-user1:
+        container_name: asl-user1
+        cpu_shares: 512
+        mem_reservation: 300m
+        volumes:
+            #Write Asterisk configuration outside container
+            - '/etc/asterisk/rpt.conf:/etc/asterisk/rpt.conf'
+            - '/etc/asterisk/extensions.conf:/etc/asterisk/extensions.conf'
+            - '/etc/asterisk/iax.conf:/etc/asterisk/iax.conf'
+            #Write logs files outside of container
+        ports:
+            - '4569:4569/udp'
+        image: 'shaymez/pbx-asl-engine:latest'
+        restart: "unless-stopped"
+        networks:
+           app_net:
+             ipv4_address: 172.16.238.10
+        #Control markup inside container
+        environment:
+            #IPV6 support 
+            - ASL_IPV6=0
+        read_only: "true"
+
+    pbx-asl-user2:
+        container_name: asl-user2
+        cpu_shares: 512 
+        mem_reservation: 300m
+        volumes:
+            #Write Asterisk configuration outside container
+            - '/etc/asterisk/rpt.conf:/etc/asterisk/rpt.conf'
+            - '/etc/asterisk/extensions.conf:/etc/asterisk/extensions.conf'
+            - '/etc/asterisk/iax.conf:/etc/asterisk/iax.conf'
+            #Write logs files outside of container
+        ports:
+            - '4570:4570/udp'
+        image: 'shaymez/pbx-asl-engine:latest'
+        restart: "unless-stopped"
+        networks:
+           app_net:
+             ipv4_address: 172.16.238.20
+        #Control markup inside container
+        environment:
+            #IPV6 support 
+            - ASL_IPV6=0
+        read_only: "true"
+
+    pbx-asl-user3:
+        container_name: asl-user3
+        cpu_shares: 512
+        mem_reservation: 300m
+        volumes:
+            #Write Asterisk configuration outside container
+            - '/etc/asterisk/rpt.conf:/etc/asterisk/rpt.conf'
+            - '/etc/asterisk/extensions.conf:/etc/asterisk/extensions.conf'
+            - '/etc/asterisk/iax.conf:/etc/asterisk/iax.conf'
+            #Write logs files outside of container
+        ports:
+            - '4570:4570/udp'
+        image: 'shaymez/pbx-asl-engine:latest'
+        restart: "unless-stopped"
+        networks:
+           app_net:
+             ipv4_address: 172.16.238.30
+        #Control markup inside container
+        environment:
+            #IPV6 support 
+            - ASL_IPV6=0
+        read_only: "true"
+
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
+          gateway: 172.16.238.1
