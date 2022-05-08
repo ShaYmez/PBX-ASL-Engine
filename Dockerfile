@@ -17,7 +17,7 @@ RUN echo "deb https://kc1kcc.com/repos/asl_builds buster main" > /etc/apt/source
 RUN wget -O - https://kc1kcc.com/repos/apt.gpg.key | apt-key add -
 
 
- Install application dependencies
+# Install application dependencies
 # RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
 #    debhelper quilt zlib1g-dev libreadline-gplv2-dev libgsm1-dev libssl-dev libtonezone-dev libasound2-dev libpq-dev unixodbc-dev libpri-dev libvpb-dev asl-dahdi-source autotools-dev libnewt-dev libsqlite-dev libspeex-dev libspeexdsp-dev graphviz libcurl4-openssl-dev doxygen gsfonts libpopt-dev libiksemel-dev freetds-dev libvorbis-dev libsnmp-dev libcap-dev libi2c-dev libjansson-dev libusb-dev \
 #    --no-install-recommends
