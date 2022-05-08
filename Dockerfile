@@ -18,14 +18,6 @@ RUN apt-get update && apt-get -y install \
     wget \
     --no-install-recommends
 
-# Volumes
-#VOLUME .. /src
-
-# clone ASL-Asterisk
-#RUN git clone https://github.com/ajpaul25/ASL-Asterisk.git/ /src
-#WORKDIR /src/asterisk
-#RUN git fetch
-
 # add the kc1kcc repo for build deps
 RUN echo "deb https://kc1kcc.com/repos/asl_builds buster main" > /etc/apt/sources.list.d/kc1kcc_asl_builds.list
 RUN wget -O - https://kc1kcc.com/repos/apt.gpg.key | apt-key add -
@@ -41,7 +33,3 @@ RUN apt-get install -y asl-asterisk --option=Dpkg::Options::=--force-confdef
 COPY entrypoint /entrypoint
 # Make Executable
 RUN chmod +x /entrypoint
-
-
-
-
