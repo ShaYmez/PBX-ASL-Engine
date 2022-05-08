@@ -18,9 +18,9 @@ RUN apt-get update && apt-get -y install \
     wget \
     --no-install-recommends
 
-# add the kc1kcc repo for build deps
-RUN echo "deb https://kc1kcc.com/repos/asl_builds buster main" > /etc/apt/sources.list.d/kc1kcc_asl_builds.list
-RUN wget -O - https://kc1kcc.com/repos/apt.gpg.key | apt-key add -
+# add the official ASL repo for build deps
+RUN echo "deb http://apt.allstarlink.org/repos/asl_builds buster main" > /etc/apt/sources.list.d/allstar.list
+RUN wget -O - http://downloads.allstarlink.org/repos/repo_signing.key | apt-key add -
 
 # Install application dependencies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
@@ -28,7 +28,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
     --no-install-recommends
 
 RUN apt-get update -y
-RUN apt-get install -y asl-asterisk asl-dahdi --option=Dpkg::Options::=--force-confdef
+
+RUN apt-get install -y linux-headers-$(uname -r) asl-asterisk allstar-helpers asl-dahdi --option=Dpkg::Options::=--force-confdef
 
 RUN apt-get update && apt-get install -y openssh-server sudo
 RUN mkdir /var/run/sshd
