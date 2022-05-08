@@ -45,9 +45,9 @@ echo "deb http://dvswitch.org/DVSwitch_Repository $distribution hamradio" >>/etc
 echo "#" >>/etc/apt/sources.list.d/dvswitch.list
 
 echo "download package information from all configured sources"
-apt-get update --allow-releaseinfo-change > /dev/null 2>&1
-apt-get update > /dev/null 2>&1
-apt-get install dvswitch-server
-apt-get install allstar
+apt-get update -y --allow-releaseinfo-change > /dev/null 2>&1
+apt-get update -y > /dev/null 2>&1
+apt-get install -y dvswitch-server
+apt-get install -y allstar
 
 done
