@@ -14,6 +14,9 @@ services:
             - '/etc/asl-user1/iax.conf:/etc/asterisk/iax.conf'
             #Write logs files outside of container
         ports:
+            #SSH Port
+            - '2221:22/tcp'
+            #IAX Port
             - '4569:4569/udp'
         image: 'shaymez/pbx-asl-engine:latest'
         restart: "unless-stopped"
@@ -37,6 +40,9 @@ services:
             - '/etc/asl-user2/iax.conf:/etc/asterisk/iax.conf'
             #Write logs files outside of container
         ports:
+            #SSH Port
+            - '2222:22/tcp'
+            #IAX Port
             - '4570:4570/udp'
         image: 'shaymez/pbx-asl-engine:latest'
         restart: "unless-stopped"
@@ -60,6 +66,9 @@ services:
             - '/etc/asl-user3/iax.conf:/etc/asterisk/iax.conf'
             #Write logs files outside of container
         ports:
+            #SSH Port
+            - '2223:22/tcp'
+            #IAX Port
             - '4570:4570/udp'
         image: 'shaymez/pbx-asl-engine:latest'
         restart: "unless-stopped"
