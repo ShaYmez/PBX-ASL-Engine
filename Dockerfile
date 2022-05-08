@@ -28,7 +28,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
     --no-install-recommends
 
 RUN apt-get update -y
-RUN apt-get install -y asl-asterisk --option=Dpkg::Options::=--force-confdef
+RUN apt-get install -y asl-asterisk asl-dahdi --option=Dpkg::Options::=--force-confdef
 
 COPY entrypoint /entrypoint
 # Make Executable
