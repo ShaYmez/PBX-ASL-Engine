@@ -8,6 +8,7 @@ ENTRYPOINT ["/entrypoint"]
 RUN apt-get update && apt-get -y install \
     gnupg \
     net-tools \
+    wget \
     
     --no-install-recommends
 
