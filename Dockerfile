@@ -1,6 +1,6 @@
 FROM amd64/debian:buster
 
-ENTRYPOINT ["/entrypoint"]
+# ENTRYPOINT ["/entrypoint"]
 
 
 # Install build dependencies
@@ -30,6 +30,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
 RUN apt-get update -y
 RUN apt-get install -y asl-asterisk asl-dahdi --option=Dpkg::Options::=--force-confdef
 
-COPY entrypoint /entrypoint
+# COPY entrypoint /entrypoint
 # Make Executable
-RUN chmod +x /entrypoint
+# RUN chmod +x /entrypoint
