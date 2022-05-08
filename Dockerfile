@@ -15,7 +15,7 @@ RUN apt-get update && apt-get -y install \
 RUN wget -O - http://dvswitch.org/DVSwitch_Repository/dvswitch.gpg.key | apt-key add -
 
 # add the dv-switch repo for build deps
-RUN echo "deb http://dvswitch.org/DVSwitch_Repository" > /etc/apt/sources.list.d/dvswitch.list
+RUN echo "deb http://dvswitch.org/DVSwitch_Repository $distribution hamradio" >>/etc/apt/sources.list.d/dvswitch.list
 
 
 # Install application dependencies
