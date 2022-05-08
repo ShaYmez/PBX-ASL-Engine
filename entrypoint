@@ -47,7 +47,7 @@ echo "#" >>/etc/apt/sources.list.d/dvswitch.list
 echo "download package information from all configured sources"
 apt-get update -y --allow-releaseinfo-change > /dev/null 2>&1
 apt-get update -y > /dev/null 2>&1
-apt-get install -y dvswitch-server
+# apt-get install -y dvswitch-server
 apt-get install -y allstar
 
 done
