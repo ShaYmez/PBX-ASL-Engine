@@ -55,7 +55,7 @@ cat << EOF > /etc/asl/user1/rpt.conf
 ; no allstar link nodes should be defined here. Only place a definition
 ; for your local nodes, and private (off of allstar link) nodes here.
 
-1999 = radio@127.0.0.1:4585/1999,NONE	; This must be changed to your node number
+1999 = radio@127.0.0.1:4569/1999,NONE	; This must be changed to your node number
                                         ; and iax port number if not the default
 
 [1999]					; Change this to your assigned node number
@@ -64,17 +64,17 @@ cat << EOF > /etc/asl/user1/rpt.conf
 					; Rx audio/signalling channel. Choose ONLY 1 per node stanza
 
 					; Enable the selected channel driver in modules.conf !!!
-; rxchannel = dahdi/pseudo	        ; No radio (hub)
+rxchannel = dahdi/pseudo	        ; No radio (hub)
 ; rxchannel = SimpleUSB/usb_1999	; SimpleUSB
 ; rxchannel = Pi/1                      ; Raspberry Pi PiTA
 ; rxchannel = Radio/usb_1999		; USBRadio (DSP)
 ; rxchannel = Dahdi/1			; PCI Quad card
 ; rxchannel = Beagle/1			; BeagleBoard
-rxchannel = USRP/127.0.0.1:34001:32001; GNU Radio interface USRP
+; rxchannel = USRP/127.0.0.1:34001:32001; GNU Radio interface USRP
 ; rxchannel = Voter/1999                ; RTCM device
 
 
-duplex = 0                              ; 0 = Half duplex with no telemetry tones or hang time.
+duplex = 1                              ; 0 = Half duplex with no telemetry tones or hang time.
                                         ;     Special Case: Full duplex if linktolink is set to yes.
                                         ;     This mode is preferred when interfacing with an external multiport repeater controller.
 					;     Comment out idrecording and idtalkover to suppress IDs also
@@ -116,19 +116,19 @@ context = radio				; dialing context for phone
 callerid = "Repeater" <0000000000>	; callerid for phone calls
 accountcode = RADIO                     ; account code (optional)
 
-hangtime = 0				; squelch tail hang time (in ms) (optional, default 5 seconds, 5000 ms)
-althangtime = 100			; longer squelch tail
-totime = 600000				; transmit time-out time (in ms) (optional, default 3 minutes 180000 ms)
+hangtime = 1000				; squelch tail hang time (in ms) (optional, default 5 seconds, 5000 ms)
+althangtime = 3000			; longer squelch tail
+totime = 180000				; transmit time-out time (in ms) (optional, default 3 minutes 180000 ms)
 
-;idrecording = |iM0JKT			; Main ID message
-;idtalkover = |iM0JKT			; Talkover ID message
+idrecording = |iWB6NIL			; cording or morse string see https://wiki.allstarlink.org/wiki/Rpt.conf#idrecording.3D
+idtalkover = |iWB6NIL                   ; Talkover ID (optional) default is none see https://wiki.allstarlink.org/wiki/Rpt.conf#idtalkover.3D
 					; See Telemetry section Example: idrecording = rpt/nodenames/1999
 idtime = 540000				; id interval time (in ms) (optional) Default 5 minutes (300000 ms)
 politeid = 30000			; time in milliseconds before ID timer expires to try and ID in the tail. (optional, default 30000)
 
-;unlinkedct = ct2			; Send a this courtesy tone when the user unkeys if the node is not connected to any other nodes. (optional, default is none)
-;remotect = ct3				; remote linked courtesy tone (indicates a remote is in the list of links)
-;linkunkeyct = ct8			; sent when a transmission received over the link unkeys
+unlinkedct = ct2			; Send a this courtesy tone when the user unkeys if the node is not connected to any other nodes. (optional, default is none)
+remotect = ct3				; remote linked courtesy tone (indicates a remote is in the list of links)
+linkunkeyct = ct8			; sent when a transmission received over the link unkeys
 ;nolocallinkct = 0			; Send unlinkedct instead if another local node is connected to this node (hosted on the same PC).
 
 ; Supermon smlogger
@@ -157,14 +157,14 @@ discpgm=/usr/local/sbin/supermon/smlogger 0
 
 ;nounkeyct = 0				; Set to a 1 to eliminate courtesy tones and associated delays.
 
-holdofftelem = 1			; Hold off all telemetry when signal is present on receiver or from connected nodes
+holdofftelem = 0			; Hold off all telemetry when signal is present on receiver or from connected nodes
 					; except when an ID needs to be done and there is a signal coming from a connected node.
 
-telemdefault = 0                        ; 0 = telemetry output off
+telemdefault = 1                        ; 0 = telemetry output off
                                         ; 1 = telemetry output on (default = 1)
                                         ; 2 = timed telemetry output on command execution and for a short time thereafter.
 
-telemdynamic = 0                        ; 0 = disallow users to change the local telemetry setting with a COP command,
+telemdynamic = 1                        ; 0 = disallow users to change the local telemetry setting with a COP command,
                                         ; 1 = Allow users to change the setting with a COP command. (default = 1)
 
 ;beaconing = 0				; Send ID regardless of repeater activity (Required in the UK, but probably illegal in the US)
@@ -258,23 +258,6 @@ statpost_url = http://stats.allstarlink.org/uhandler ; Status updates
 ; *C		User Functions
 ; *D		User Functions
 
-;;;;;;;;;;;;;;;;;;;;;;
-;DVSwitch DTMF Commands
-;;;;;;;;;;;;;;;;;;;;;;
-
-00 = cmd, /opt/MMDVM_Bridge/disconnecter.sh 						; Unlink from last TG / reflector
-01 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode DMR	; Enable DMR
-02 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode YSF	; Enable YSF
-03 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode P25	; Enable P25
-04 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode NXDN 	; Enable NXDN
-05 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode DSTAR	; Enable DSTAR
-;06 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
-;07 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
-;08 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
-09=autopatchup,context=tgtune,dialtime=90000,farenddisconnect=1,noct,quiet=1		; Change Talkgroup / Refelector
-888 = cmd, /usr/local/dvs/88_restart.sh							; Restart DVSwitch Services
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Mandatory Command Codes
 1 = ilink,1		; Disconnect specified link
@@ -715,7 +698,7 @@ cat << EOF > /etc/asl/user2/rpt.conf
 ; no allstar link nodes should be defined here. Only place a definition
 ; for your local nodes, and private (off of allstar link) nodes here.
 
-1999 = radio@127.0.0.1:4585/1999,NONE	; This must be changed to your node number
+1999 = radio@127.0.0.1:4569/1999,NONE	; This must be changed to your node number
                                         ; and iax port number if not the default
 
 [1999]					; Change this to your assigned node number
@@ -724,17 +707,17 @@ cat << EOF > /etc/asl/user2/rpt.conf
 					; Rx audio/signalling channel. Choose ONLY 1 per node stanza
 
 					; Enable the selected channel driver in modules.conf !!!
-; rxchannel = dahdi/pseudo	        ; No radio (hub)
+rxchannel = dahdi/pseudo	        ; No radio (hub)
 ; rxchannel = SimpleUSB/usb_1999	; SimpleUSB
 ; rxchannel = Pi/1                      ; Raspberry Pi PiTA
 ; rxchannel = Radio/usb_1999		; USBRadio (DSP)
 ; rxchannel = Dahdi/1			; PCI Quad card
 ; rxchannel = Beagle/1			; BeagleBoard
-rxchannel = USRP/127.0.0.1:34001:32001; GNU Radio interface USRP
+; rxchannel = USRP/127.0.0.1:34001:32001; GNU Radio interface USRP
 ; rxchannel = Voter/1999                ; RTCM device
 
 
-duplex = 0                              ; 0 = Half duplex with no telemetry tones or hang time.
+duplex = 1                              ; 0 = Half duplex with no telemetry tones or hang time.
                                         ;     Special Case: Full duplex if linktolink is set to yes.
                                         ;     This mode is preferred when interfacing with an external multiport repeater controller.
 					;     Comment out idrecording and idtalkover to suppress IDs also
@@ -776,19 +759,19 @@ context = radio				; dialing context for phone
 callerid = "Repeater" <0000000000>	; callerid for phone calls
 accountcode = RADIO                     ; account code (optional)
 
-hangtime = 0				; squelch tail hang time (in ms) (optional, default 5 seconds, 5000 ms)
-althangtime = 100			; longer squelch tail
-totime = 600000				; transmit time-out time (in ms) (optional, default 3 minutes 180000 ms)
+hangtime = 1000				; squelch tail hang time (in ms) (optional, default 5 seconds, 5000 ms)
+althangtime = 3000			; longer squelch tail
+totime = 180000				; transmit time-out time (in ms) (optional, default 3 minutes 180000 ms)
 
-;idrecording = |iM0JKT			; Main ID message
-;idtalkover = |iM0JKT			; Talkover ID message
+idrecording = |iWB6NIL			; cording or morse string see https://wiki.allstarlink.org/wiki/Rpt.conf#idrecording.3D
+idtalkover = |iWB6NIL                   ; Talkover ID (optional) default is none see https://wiki.allstarlink.org/wiki/Rpt.conf#idtalkover.3D
 					; See Telemetry section Example: idrecording = rpt/nodenames/1999
 idtime = 540000				; id interval time (in ms) (optional) Default 5 minutes (300000 ms)
 politeid = 30000			; time in milliseconds before ID timer expires to try and ID in the tail. (optional, default 30000)
 
-;unlinkedct = ct2			; Send a this courtesy tone when the user unkeys if the node is not connected to any other nodes. (optional, default is none)
-;remotect = ct3				; remote linked courtesy tone (indicates a remote is in the list of links)
-;linkunkeyct = ct8			; sent when a transmission received over the link unkeys
+unlinkedct = ct2			; Send a this courtesy tone when the user unkeys if the node is not connected to any other nodes. (optional, default is none)
+remotect = ct3				; remote linked courtesy tone (indicates a remote is in the list of links)
+linkunkeyct = ct8			; sent when a transmission received over the link unkeys
 ;nolocallinkct = 0			; Send unlinkedct instead if another local node is connected to this node (hosted on the same PC).
 
 ; Supermon smlogger
@@ -817,14 +800,14 @@ discpgm=/usr/local/sbin/supermon/smlogger 0
 
 ;nounkeyct = 0				; Set to a 1 to eliminate courtesy tones and associated delays.
 
-holdofftelem = 1			; Hold off all telemetry when signal is present on receiver or from connected nodes
+holdofftelem = 0			; Hold off all telemetry when signal is present on receiver or from connected nodes
 					; except when an ID needs to be done and there is a signal coming from a connected node.
 
-telemdefault = 0                        ; 0 = telemetry output off
+telemdefault = 1                        ; 0 = telemetry output off
                                         ; 1 = telemetry output on (default = 1)
                                         ; 2 = timed telemetry output on command execution and for a short time thereafter.
 
-telemdynamic = 0                        ; 0 = disallow users to change the local telemetry setting with a COP command,
+telemdynamic = 1                        ; 0 = disallow users to change the local telemetry setting with a COP command,
                                         ; 1 = Allow users to change the setting with a COP command. (default = 1)
 
 ;beaconing = 0				; Send ID regardless of repeater activity (Required in the UK, but probably illegal in the US)
@@ -918,23 +901,6 @@ statpost_url = http://stats.allstarlink.org/uhandler ; Status updates
 ; *C		User Functions
 ; *D		User Functions
 
-;;;;;;;;;;;;;;;;;;;;;;
-;DVSwitch DTMF Commands
-;;;;;;;;;;;;;;;;;;;;;;
-
-00 = cmd, /opt/MMDVM_Bridge/disconnecter.sh 						; Unlink from last TG / reflector
-01 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode DMR	; Enable DMR
-02 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode YSF	; Enable YSF
-03 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode P25	; Enable P25
-04 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode NXDN 	; Enable NXDN
-05 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode DSTAR	; Enable DSTAR
-;06 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
-;07 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
-;08 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
-09=autopatchup,context=tgtune,dialtime=90000,farenddisconnect=1,noct,quiet=1		; Change Talkgroup / Refelector
-888 = cmd, /usr/local/dvs/88_restart.sh							; Restart DVSwitch Services
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Mandatory Command Codes
 1 = ilink,1		; Disconnect specified link
@@ -1375,7 +1341,7 @@ cat << EOF > /etc/asl/user3/rpt.conf
 ; no allstar link nodes should be defined here. Only place a definition
 ; for your local nodes, and private (off of allstar link) nodes here.
 
-1999 = radio@127.0.0.1:4585/1999,NONE	; This must be changed to your node number
+1999 = radio@127.0.0.1:4569/1999,NONE	; This must be changed to your node number
                                         ; and iax port number if not the default
 
 [1999]					; Change this to your assigned node number
@@ -1384,17 +1350,17 @@ cat << EOF > /etc/asl/user3/rpt.conf
 					; Rx audio/signalling channel. Choose ONLY 1 per node stanza
 
 					; Enable the selected channel driver in modules.conf !!!
-; rxchannel = dahdi/pseudo	        ; No radio (hub)
+rxchannel = dahdi/pseudo	        ; No radio (hub)
 ; rxchannel = SimpleUSB/usb_1999	; SimpleUSB
 ; rxchannel = Pi/1                      ; Raspberry Pi PiTA
 ; rxchannel = Radio/usb_1999		; USBRadio (DSP)
 ; rxchannel = Dahdi/1			; PCI Quad card
 ; rxchannel = Beagle/1			; BeagleBoard
-rxchannel = USRP/127.0.0.1:34001:32001; GNU Radio interface USRP
+; rxchannel = USRP/127.0.0.1:34001:32001; GNU Radio interface USRP
 ; rxchannel = Voter/1999                ; RTCM device
 
 
-duplex = 0                              ; 0 = Half duplex with no telemetry tones or hang time.
+duplex = 1                              ; 0 = Half duplex with no telemetry tones or hang time.
                                         ;     Special Case: Full duplex if linktolink is set to yes.
                                         ;     This mode is preferred when interfacing with an external multiport repeater controller.
 					;     Comment out idrecording and idtalkover to suppress IDs also
@@ -1436,19 +1402,19 @@ context = radio				; dialing context for phone
 callerid = "Repeater" <0000000000>	; callerid for phone calls
 accountcode = RADIO                     ; account code (optional)
 
-hangtime = 0				; squelch tail hang time (in ms) (optional, default 5 seconds, 5000 ms)
-althangtime = 100			; longer squelch tail
-totime = 600000				; transmit time-out time (in ms) (optional, default 3 minutes 180000 ms)
+hangtime = 1000				; squelch tail hang time (in ms) (optional, default 5 seconds, 5000 ms)
+althangtime = 3000			; longer squelch tail
+totime = 180000				; transmit time-out time (in ms) (optional, default 3 minutes 180000 ms)
 
-;idrecording = |iM0JKT			; Main ID message
-;idtalkover = |iM0JKT			; Talkover ID message
+idrecording = |iWB6NIL			; cording or morse string see https://wiki.allstarlink.org/wiki/Rpt.conf#idrecording.3D
+idtalkover = |iWB6NIL                   ; Talkover ID (optional) default is none see https://wiki.allstarlink.org/wiki/Rpt.conf#idtalkover.3D
 					; See Telemetry section Example: idrecording = rpt/nodenames/1999
 idtime = 540000				; id interval time (in ms) (optional) Default 5 minutes (300000 ms)
 politeid = 30000			; time in milliseconds before ID timer expires to try and ID in the tail. (optional, default 30000)
 
-;unlinkedct = ct2			; Send a this courtesy tone when the user unkeys if the node is not connected to any other nodes. (optional, default is none)
-;remotect = ct3				; remote linked courtesy tone (indicates a remote is in the list of links)
-;linkunkeyct = ct8			; sent when a transmission received over the link unkeys
+unlinkedct = ct2			; Send a this courtesy tone when the user unkeys if the node is not connected to any other nodes. (optional, default is none)
+remotect = ct3				; remote linked courtesy tone (indicates a remote is in the list of links)
+linkunkeyct = ct8			; sent when a transmission received over the link unkeys
 ;nolocallinkct = 0			; Send unlinkedct instead if another local node is connected to this node (hosted on the same PC).
 
 ; Supermon smlogger
@@ -1477,14 +1443,14 @@ discpgm=/usr/local/sbin/supermon/smlogger 0
 
 ;nounkeyct = 0				; Set to a 1 to eliminate courtesy tones and associated delays.
 
-holdofftelem = 1			; Hold off all telemetry when signal is present on receiver or from connected nodes
+holdofftelem = 0			; Hold off all telemetry when signal is present on receiver or from connected nodes
 					; except when an ID needs to be done and there is a signal coming from a connected node.
 
-telemdefault = 0                        ; 0 = telemetry output off
+telemdefault = 1                        ; 0 = telemetry output off
                                         ; 1 = telemetry output on (default = 1)
                                         ; 2 = timed telemetry output on command execution and for a short time thereafter.
 
-telemdynamic = 0                        ; 0 = disallow users to change the local telemetry setting with a COP command,
+telemdynamic = 1                        ; 0 = disallow users to change the local telemetry setting with a COP command,
                                         ; 1 = Allow users to change the setting with a COP command. (default = 1)
 
 ;beaconing = 0				; Send ID regardless of repeater activity (Required in the UK, but probably illegal in the US)
@@ -1578,23 +1544,6 @@ statpost_url = http://stats.allstarlink.org/uhandler ; Status updates
 ; *C		User Functions
 ; *D		User Functions
 
-;;;;;;;;;;;;;;;;;;;;;;
-;DVSwitch DTMF Commands
-;;;;;;;;;;;;;;;;;;;;;;
-
-00 = cmd, /opt/MMDVM_Bridge/disconnecter.sh 						; Unlink from last TG / reflector
-01 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode DMR	; Enable DMR
-02 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode YSF	; Enable YSF
-03 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode P25	; Enable P25
-04 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode NXDN 	; Enable NXDN
-05 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode DSTAR	; Enable DSTAR
-;06 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
-;07 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
-;08 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
-09=autopatchup,context=tgtune,dialtime=90000,farenddisconnect=1,noct,quiet=1		; Change Talkgroup / Refelector
-888 = cmd, /usr/local/dvs/88_restart.sh							; Restart DVSwitch Services
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Mandatory Command Codes
 1 = ilink,1		; Disconnect specified link
@@ -2022,6 +1971,1494 @@ calltermwait = 2000                     ; Time to wait before announcing "call t
 #includeifexists custom/rpt.conf
 EOF
 
+cat << EOF > /etc/asl/user1/iax.conf
+; Inter-Asterisk eXchange driver definition
+
+[general]
+; !!! Change this to match your node registration !!!
+; register=1999:123456@register.allstarlink.org    ; This must be changed to your node number, password 
+; remove the leading ";"
+
+bindport = 4569    ; bindport and bindaddr may be specified
+
+; NOTE: bindport must be specified BEFORE
+; bindaddr or may be specified on a specific
+; bindaddr if followed by colon and port
+;  (e.g. bindaddr=192.168.0.1:4569)
+
+; bindaddr = 192.168.0.1    ; more than once to bind to multiple
+                                ; addresses, but the first will be the 
+                                ; default
+
+disallow = all    ; The permitted codecs for outgoing connections 
+    ; Audio Quality    Bandwidth
+;allow = ulaw    ; best    87 kbps
+;allow = adpcm    ; good    55 kbps
+;allow = gsm    ; medicore    36 kbps
+allow = ulaw
+allow = adpcm
+allow = g722
+allow = g726aal2
+allow = gsm
+allow = ilbc
 
 
+jitterbuffer = yes                                                                
+forcejitterbuffer = yes                                                           
+dropcount = 2                                                                     
+maxjitterbuffer = 4000                                                            
+maxjitterinterps = 10                                                             
+resyncthreshold = 1000                                                            
+maxexcessbuffer = 80                                                              
+minexcessbuffer = 10                                                              
+jittershrinkrate = 1                                                              
+tos = 0x1E                                                                  
+autokill = yes                                                                    
+delayreject = yes                                                                 
+; iaxthreadcount = 30                                                              
+; iaxmaxthreadcount = 150   
+
+
+; Incoming radio connections
+
+[radio]
+type = user
+disallow = all
+allow = ulaw
+allow = adpcm
+allow = g722
+allow = g726aal2
+allow = gsm
+allow = ilbc
+codecpriority = host
+context = radio-secure
+transfer = no
+
+[iaxrpt]                            ; Connect from iaxrpt Username field (PC AllStar Client)
+type = user                           ; Notice type is user here <---------------
+context = iaxrpt    ; Context to jump to in extensions.conf
+auth = md5
+secret = Your_Secret_Pasword_Here
+host = dynamic
+disallow = all                    
+allow = ulaw
+allow = adpcm
+allow = gsm                       
+transfer = no
+
+[iaxclient]                         ; Connect from iax client (Zoiper...)
+type = friend                         ; Notice type here is friend <--------------
+context = iax-client                  ; Context to jump to in extensions.conf
+auth = md5
+secret = Your_Secret_Password_Here
+host = dynamic
+disallow = all
+allow = ulaw
+allow = adpcm
+allow = gsm
+transfer = no
+
+[allstar-sys]
+type = user
+context = allstar-sys
+auth = rsa
+inkeys = allstar
+disallow = all
+allow = ulaw
+
+[allstar-public]
+type = user
+context = allstar-public
+auth = md5
+secret = allstar
+disallow = all
+allow = ulaw
+allow = gsm
+
+; The following should be un-commented to support Allstar Autopatch service
+; [allstar-autopatch]
+; type = peer
+; host = register.allstarlink.org
+; username = <One of the Node numbers on this server>
+; secret = <The node password for the above node>
+; auth = md5
+; disallow = all
+; allow = ulaw
+; transfer = no
+
+#includeifexists custom/iax.conf
+EOF
+
+cat << EOF > /etc/asl/user2/iax.conf
+; Inter-Asterisk eXchange driver definition
+
+[general]
+; !!! Change this to match your node registration !!!
+; register=1999:123456@register.allstarlink.org    ; This must be changed to your node number, password 
+; remove the leading ";"
+
+bindport = 4569    ; bindport and bindaddr may be specified
+
+; NOTE: bindport must be specified BEFORE
+; bindaddr or may be specified on a specific
+; bindaddr if followed by colon and port
+;  (e.g. bindaddr=192.168.0.1:4569)
+
+; bindaddr = 192.168.0.1    ; more than once to bind to multiple
+                                ; addresses, but the first will be the 
+                                ; default
+
+disallow = all    ; The permitted codecs for outgoing connections 
+    ; Audio Quality    Bandwidth
+;allow = ulaw    ; best    87 kbps
+;allow = adpcm    ; good    55 kbps
+;allow = gsm    ; medicore    36 kbps
+allow = ulaw
+allow = adpcm
+allow = g722
+allow = g726aal2
+allow = gsm
+allow = ilbc
+
+
+jitterbuffer = yes                                                                
+forcejitterbuffer = yes                                                           
+dropcount = 2                                                                     
+maxjitterbuffer = 4000                                                            
+maxjitterinterps = 10                                                             
+resyncthreshold = 1000                                                            
+maxexcessbuffer = 80                                                              
+minexcessbuffer = 10                                                              
+jittershrinkrate = 1                                                              
+tos = 0x1E                                                                  
+autokill = yes                                                                    
+delayreject = yes                                                                 
+; iaxthreadcount = 30                                                              
+; iaxmaxthreadcount = 150   
+
+
+; Incoming radio connections
+
+[radio]
+type = user
+disallow = all
+allow = ulaw
+allow = adpcm
+allow = g722
+allow = g726aal2
+allow = gsm
+allow = ilbc
+codecpriority = host
+context = radio-secure
+transfer = no
+
+[iaxrpt]                            ; Connect from iaxrpt Username field (PC AllStar Client)
+type = user                           ; Notice type is user here <---------------
+context = iaxrpt    ; Context to jump to in extensions.conf
+auth = md5
+secret = Your_Secret_Pasword_Here
+host = dynamic
+disallow = all                    
+allow = ulaw
+allow = adpcm
+allow = gsm                       
+transfer = no
+
+[iaxclient]                         ; Connect from iax client (Zoiper...)
+type = friend                         ; Notice type here is friend <--------------
+context = iax-client                  ; Context to jump to in extensions.conf
+auth = md5
+secret = Your_Secret_Password_Here
+host = dynamic
+disallow = all
+allow = ulaw
+allow = adpcm
+allow = gsm
+transfer = no
+
+[allstar-sys]
+type = user
+context = allstar-sys
+auth = rsa
+inkeys = allstar
+disallow = all
+allow = ulaw
+
+[allstar-public]
+type = user
+context = allstar-public
+auth = md5
+secret = allstar
+disallow = all
+allow = ulaw
+allow = gsm
+
+; The following should be un-commented to support Allstar Autopatch service
+; [allstar-autopatch]
+; type = peer
+; host = register.allstarlink.org
+; username = <One of the Node numbers on this server>
+; secret = <The node password for the above node>
+; auth = md5
+; disallow = all
+; allow = ulaw
+; transfer = no
+
+#includeifexists custom/iax.conf
+EOF
+
+cat << EOF > /etc/asl/user2/iax.conf
+; Inter-Asterisk eXchange driver definition
+
+[general]
+; !!! Change this to match your node registration !!!
+; register=1999:123456@register.allstarlink.org    ; This must be changed to your node number, password 
+; remove the leading ";"
+
+bindport = 4569    ; bindport and bindaddr may be specified
+
+; NOTE: bindport must be specified BEFORE
+; bindaddr or may be specified on a specific
+; bindaddr if followed by colon and port
+;  (e.g. bindaddr=192.168.0.1:4569)
+
+; bindaddr = 192.168.0.1    ; more than once to bind to multiple
+                                ; addresses, but the first will be the 
+                                ; default
+
+disallow = all    ; The permitted codecs for outgoing connections 
+    ; Audio Quality    Bandwidth
+;allow = ulaw    ; best    87 kbps
+;allow = adpcm    ; good    55 kbps
+;allow = gsm    ; medicore    36 kbps
+allow = ulaw
+allow = adpcm
+allow = g722
+allow = g726aal2
+allow = gsm
+allow = ilbc
+
+
+jitterbuffer = yes                                                                
+forcejitterbuffer = yes                                                           
+dropcount = 2                                                                     
+maxjitterbuffer = 4000                                                            
+maxjitterinterps = 10                                                             
+resyncthreshold = 1000                                                            
+maxexcessbuffer = 80                                                              
+minexcessbuffer = 10                                                              
+jittershrinkrate = 1                                                              
+tos = 0x1E                                                                  
+autokill = yes                                                                    
+delayreject = yes                                                                 
+; iaxthreadcount = 30                                                              
+; iaxmaxthreadcount = 150   
+
+
+; Incoming radio connections
+
+[radio]
+type = user
+disallow = all
+allow = ulaw
+allow = adpcm
+allow = g722
+allow = g726aal2
+allow = gsm
+allow = ilbc
+codecpriority = host
+context = radio-secure
+transfer = no
+
+[iaxrpt]                            ; Connect from iaxrpt Username field (PC AllStar Client)
+type = user                           ; Notice type is user here <---------------
+context = iaxrpt    ; Context to jump to in extensions.conf
+auth = md5
+secret = Your_Secret_Pasword_Here
+host = dynamic
+disallow = all                    
+allow = ulaw
+allow = adpcm
+allow = gsm                       
+transfer = no
+
+[iaxclient]                         ; Connect from iax client (Zoiper...)
+type = friend                         ; Notice type here is friend <--------------
+context = iax-client                  ; Context to jump to in extensions.conf
+auth = md5
+secret = Your_Secret_Password_Here
+host = dynamic
+disallow = all
+allow = ulaw
+allow = adpcm
+allow = gsm
+transfer = no
+
+[allstar-sys]
+type = user
+context = allstar-sys
+auth = rsa
+inkeys = allstar
+disallow = all
+allow = ulaw
+
+[allstar-public]
+type = user
+context = allstar-public
+auth = md5
+secret = allstar
+disallow = all
+allow = ulaw
+allow = gsm
+
+; The following should be un-commented to support Allstar Autopatch service
+; [allstar-autopatch]
+; type = peer
+; host = register.allstarlink.org
+; username = <One of the Node numbers on this server>
+; secret = <The node password for the above node>
+; auth = md5
+; disallow = all
+; allow = ulaw
+; transfer = no
+
+#includeifexists custom/iax.conf
+EOF
+
+cat << EOF > /etc/asl/user1/extensions.conf
+[general]
+
+static = yes       ; These two lines prevent the command-line interface
+writeprotect = yes ; from overwriting the config file. Leave them here.
+
+[globals]
+HOMENPA = 999 ; change this to your Area Code
+NODE = 1999   ; change this to your node number
+
+[default]
+
+exten => i,1,Hangup
+
+[radio-secure]
+exten => ${NODE},1,rpt,${NODE}
+
+[iaxrpt]                                ; entered from iaxrpt in iax.conf
+exten => ${NODE},1,rpt(${NODE}|X)       ; NODE is the Name field in iaxrpt
+                                        ; Info: The X option passed to the Rpt application
+                                        ; disables the normal security checks.
+                                        ; Because incoming connections are validated in iax.conf,
+                                        ; and we don't know where the user will be coming from in advance,
+                                        ; the X option is required.
+
+[iax-client]				; for IAX VIOP clients.				
+exten => ${NODE},1,Ringing
+exten => ${NODE},n,Wait(3)
+exten => ${NODE},n,Answer
+exten => ${NODE},n,Set(NODENUM=${CALLERID(number)})
+exten => ${NODE},n,Playback(rpt/node|noanswer)
+exten => ${NODE},n,SayDigits(${EXTEN})
+exten => ${NODE},n,Set(CALLERID(num)=0)
+exten => ${NODE},n,Rpt,${NODE}|P|${CALLERID(name)}
+exten => ${NODE},n,Hangup
+exten => ${NODE},n(hangit),Answer
+exten => ${NODE},n(hangit),Wait(1)
+exten => ${NODE},n(hangit),Hangup
+
+; Comment-out the following clause if you want Allstar Autopatch service
+[pstn-out]
+exten = _NXXNXXXXXX,1,playback(ss-noservice)
+exten = _NXXNXXXXXX,2,Congestion
+
+; Un-comment out the following clause if you want Allstar Autopatch service
+;[pstn-out]
+;exten = _NXXNXXXXXX,1,Dial(IAX2/allstar-autopatch/\${EXTEN})
+;exten = _NXXNXXXXXX,2,Busy
+
+[invalidnum]
+exten = s,1,Wait,3
+exten = s,n,Playback,ss-noservice
+exten = s,n,Wait,1
+exten =  s,n,Hangup
+
+[radio]
+exten = _X11,1,Goto(check_route|${EXTEN}|1);
+exten = _NXXXXXX,1,Goto(check_route|1${HOMENPA}${EXTEN}|1)
+exten = _1XXXXXXXXXX,1,Goto(check_route|${EXTEN}|1)
+exten = _07XX,1,Goto(parkedcalls|${EXTEN:1}|1)
+exten = 00,1,Goto(my-ip|s|1)
+
+[check_route]
+exten =_X.,1,Noop(${EXTEN})
+; no 800
+exten = _1800NXXXXXX,2,Goto(invalidnum|s|1)
+exten = _1888NXXXXXX,2,Goto(invalidnum|s|1)
+exten = _1877NXXXXXX,2,Goto(invalidnum|s|1)
+exten = _1866NXXXXXX,2,Goto(invalidnum|s|1)
+exten = _1855NXXXXXX,2,Goto(invalidnum|s|1)
+; no X00 NPA
+exten = _1X00XXXXXXX,2,Goto(invalidnum|s|1)
+; no X11 NPA
+exten = _1X11XXXXXXX,2,Goto(invalidnum|s|1)
+; no X11 
+exten = _X11,2,Goto(invalidnum|s|1)
+; no 555 Prefix in any NPA
+exten = _1NXX555XXXX,2,Goto(invalidnum|s|1)
+; no 976 Prefix in any NPA
+exten = _1NXX976XXXX,2,Goto(invalidnum|s|1)
+; no NPA=809
+exten = _1809XXXXXXX,2,Goto(invalidnum|s|1)
+; no NPA=900
+exten = _1900XXXXXXX,2,Goto(invalidnum|s|1)
+
+; okay, route it
+exten = _1NXXXXXXXXX,2,Goto(pstn-out|${EXTEN:1}|1)
+exten = _X.,2,Goto(invalidnum|s|1)
+
+[my-ip]
+exten = s,1,Set(MYADDR=${CURL(http://myip.vg)})
+exten = s,2,Wait,1
+exten = s,3,SayAlpha(${MYADDR})
+exten = s,4,Hangup
+
+[allstar-sys]
+exten => _1.,1,Rpt(${EXTEN:1}|Rrpt/node:NODE:rpt/in-call:digits/0:PARKED|120)
+exten => _1.,n,Hangup
+
+exten => _2.,1,Ringing
+exten => _2.,n,Wait(3)
+exten => _2.,n,Answer
+exten => _2.,n,Playback(rpt/node)
+exten => _2.,n,Saydigits(${EXTEN:1})
+exten => _2.,n,Rpt(${EXTEN:1}|P|${CALLERID(name)}-P)
+exten => _2.,n,Hangup
+
+exten => _3.,1,Ringing
+exten => _3.,n,Wait(3)
+exten => _3.,n,Answer
+exten => _3.,n,Playback(rpt/node)
+exten => _3.,n,Saydigits(${EXTEN:1})
+exten => _3.,n,Rpt(${EXTEN:1}|Pv|${CALLERID(name)}-P)
+exten => _3.,n,Hangup
+
+exten => _4.,1,Ringing
+exten => _4.,n,Wait(3)
+exten => _4.,n,Answer
+exten => _4.,n,Playback(rpt/node)
+exten => _4.,n,Saydigits(${EXTEN:1})
+exten => _4.,n,Rpt(${EXTEN:1}|D|${CALLERID(name)}-P)
+exten => _4.,n,Hangup
+
+exten => _5.,1,Ringing
+exten => _5.,n,Wait(3)
+exten => _5.,n,Answer
+exten => _5.,n,Playback(rpt/node)
+exten => _5.,n,Saydigits(${EXTEN:1})
+exten => _5.,n,Rpt(${EXTEN:1}|Dv|${CALLERID(name)}-P)
+exten => _5.,n,Hangup
+
+[allstar-public]
+
+exten => s,1,Ringing
+exten => s,n,Set(RESP=${CURL(https://register.allstarlink.org/cgi-bin/authwebphone.pl?${CALLERID(name)})})
+exten => s,n,Set(NODENUM=${CALLERID(number)})
+exten => s,n,GotoIf($["${RESP:0:1}" = "?"]?hangit)
+exten => s,n,GotoIf($["${RESP:0:1}" = ""]?hangit)
+exten => s,n,GotoIf($["${RESP:0:5}" != "OHYES"]?hangit)
+exten => s,n,Set(CALLSIGN=${RESP:5})
+exten => s,n,Wait(3)
+exten => s,n,Playback(rpt/node|noanswer)
+exten => s,n,Saydigits(${NODENUM})
+exten => s,n,Set(CALLERID(name)=${CALLSIGN})
+exten => s,n,Set(CALLERID(num)=0)
+exten => s,n,Rpt(${NODENUM}|X)
+exten => s,n,Hangup
+exten => s,n(hangit),Answer
+exten => s,n(hangit),Wait(1)
+exten => s,n(hangit),Hangup
+
+#includeifexists custom/extensions.conf
+EOF
+
+cat << EOF > /etc/asl/user2/extensions.conf
+[general]
+
+static = yes       ; These two lines prevent the command-line interface
+writeprotect = yes ; from overwriting the config file. Leave them here.
+
+[globals]
+HOMENPA = 999 ; change this to your Area Code
+NODE = 1999   ; change this to your node number
+
+[default]
+
+exten => i,1,Hangup
+
+[radio-secure]
+exten => ${NODE},1,rpt,${NODE}
+
+[iaxrpt]                                ; entered from iaxrpt in iax.conf
+exten => ${NODE},1,rpt(${NODE}|X)       ; NODE is the Name field in iaxrpt
+                                        ; Info: The X option passed to the Rpt application
+                                        ; disables the normal security checks.
+                                        ; Because incoming connections are validated in iax.conf,
+                                        ; and we don't know where the user will be coming from in advance,
+                                        ; the X option is required.
+
+[iax-client]				; for IAX VIOP clients.				
+exten => ${NODE},1,Ringing
+exten => ${NODE},n,Wait(3)
+exten => ${NODE},n,Answer
+exten => ${NODE},n,Set(NODENUM=${CALLERID(number)})
+exten => ${NODE},n,Playback(rpt/node|noanswer)
+exten => ${NODE},n,SayDigits(${EXTEN})
+exten => ${NODE},n,Set(CALLERID(num)=0)
+exten => ${NODE},n,Rpt,${NODE}|P|${CALLERID(name)}
+exten => ${NODE},n,Hangup
+exten => ${NODE},n(hangit),Answer
+exten => ${NODE},n(hangit),Wait(1)
+exten => ${NODE},n(hangit),Hangup
+
+; Comment-out the following clause if you want Allstar Autopatch service
+[pstn-out]
+exten = _NXXNXXXXXX,1,playback(ss-noservice)
+exten = _NXXNXXXXXX,2,Congestion
+
+; Un-comment out the following clause if you want Allstar Autopatch service
+;[pstn-out]
+;exten = _NXXNXXXXXX,1,Dial(IAX2/allstar-autopatch/\${EXTEN})
+;exten = _NXXNXXXXXX,2,Busy
+
+[invalidnum]
+exten = s,1,Wait,3
+exten = s,n,Playback,ss-noservice
+exten = s,n,Wait,1
+exten =  s,n,Hangup
+
+[radio]
+exten = _X11,1,Goto(check_route|${EXTEN}|1);
+exten = _NXXXXXX,1,Goto(check_route|1${HOMENPA}${EXTEN}|1)
+exten = _1XXXXXXXXXX,1,Goto(check_route|${EXTEN}|1)
+exten = _07XX,1,Goto(parkedcalls|${EXTEN:1}|1)
+exten = 00,1,Goto(my-ip|s|1)
+
+[check_route]
+exten =_X.,1,Noop(${EXTEN})
+; no 800
+exten = _1800NXXXXXX,2,Goto(invalidnum|s|1)
+exten = _1888NXXXXXX,2,Goto(invalidnum|s|1)
+exten = _1877NXXXXXX,2,Goto(invalidnum|s|1)
+exten = _1866NXXXXXX,2,Goto(invalidnum|s|1)
+exten = _1855NXXXXXX,2,Goto(invalidnum|s|1)
+; no X00 NPA
+exten = _1X00XXXXXXX,2,Goto(invalidnum|s|1)
+; no X11 NPA
+exten = _1X11XXXXXXX,2,Goto(invalidnum|s|1)
+; no X11 
+exten = _X11,2,Goto(invalidnum|s|1)
+; no 555 Prefix in any NPA
+exten = _1NXX555XXXX,2,Goto(invalidnum|s|1)
+; no 976 Prefix in any NPA
+exten = _1NXX976XXXX,2,Goto(invalidnum|s|1)
+; no NPA=809
+exten = _1809XXXXXXX,2,Goto(invalidnum|s|1)
+; no NPA=900
+exten = _1900XXXXXXX,2,Goto(invalidnum|s|1)
+
+; okay, route it
+exten = _1NXXXXXXXXX,2,Goto(pstn-out|${EXTEN:1}|1)
+exten = _X.,2,Goto(invalidnum|s|1)
+
+[my-ip]
+exten = s,1,Set(MYADDR=${CURL(http://myip.vg)})
+exten = s,2,Wait,1
+exten = s,3,SayAlpha(${MYADDR})
+exten = s,4,Hangup
+
+[allstar-sys]
+exten => _1.,1,Rpt(${EXTEN:1}|Rrpt/node:NODE:rpt/in-call:digits/0:PARKED|120)
+exten => _1.,n,Hangup
+
+exten => _2.,1,Ringing
+exten => _2.,n,Wait(3)
+exten => _2.,n,Answer
+exten => _2.,n,Playback(rpt/node)
+exten => _2.,n,Saydigits(${EXTEN:1})
+exten => _2.,n,Rpt(${EXTEN:1}|P|${CALLERID(name)}-P)
+exten => _2.,n,Hangup
+
+exten => _3.,1,Ringing
+exten => _3.,n,Wait(3)
+exten => _3.,n,Answer
+exten => _3.,n,Playback(rpt/node)
+exten => _3.,n,Saydigits(${EXTEN:1})
+exten => _3.,n,Rpt(${EXTEN:1}|Pv|${CALLERID(name)}-P)
+exten => _3.,n,Hangup
+
+exten => _4.,1,Ringing
+exten => _4.,n,Wait(3)
+exten => _4.,n,Answer
+exten => _4.,n,Playback(rpt/node)
+exten => _4.,n,Saydigits(${EXTEN:1})
+exten => _4.,n,Rpt(${EXTEN:1}|D|${CALLERID(name)}-P)
+exten => _4.,n,Hangup
+
+exten => _5.,1,Ringing
+exten => _5.,n,Wait(3)
+exten => _5.,n,Answer
+exten => _5.,n,Playback(rpt/node)
+exten => _5.,n,Saydigits(${EXTEN:1})
+exten => _5.,n,Rpt(${EXTEN:1}|Dv|${CALLERID(name)}-P)
+exten => _5.,n,Hangup
+
+[allstar-public]
+
+exten => s,1,Ringing
+exten => s,n,Set(RESP=${CURL(https://register.allstarlink.org/cgi-bin/authwebphone.pl?${CALLERID(name)})})
+exten => s,n,Set(NODENUM=${CALLERID(number)})
+exten => s,n,GotoIf($["${RESP:0:1}" = "?"]?hangit)
+exten => s,n,GotoIf($["${RESP:0:1}" = ""]?hangit)
+exten => s,n,GotoIf($["${RESP:0:5}" != "OHYES"]?hangit)
+exten => s,n,Set(CALLSIGN=${RESP:5})
+exten => s,n,Wait(3)
+exten => s,n,Playback(rpt/node|noanswer)
+exten => s,n,Saydigits(${NODENUM})
+exten => s,n,Set(CALLERID(name)=${CALLSIGN})
+exten => s,n,Set(CALLERID(num)=0)
+exten => s,n,Rpt(${NODENUM}|X)
+exten => s,n,Hangup
+exten => s,n(hangit),Answer
+exten => s,n(hangit),Wait(1)
+exten => s,n(hangit),Hangup
+
+#includeifexists custom/extensions.conf
+EOF
+
+cat << EOF > /etc/asl/user3/extensions.conf
+[general]
+
+static = yes       ; These two lines prevent the command-line interface
+writeprotect = yes ; from overwriting the config file. Leave them here.
+
+[globals]
+HOMENPA = 999 ; change this to your Area Code
+NODE = 1999   ; change this to your node number
+
+[default]
+
+exten => i,1,Hangup
+
+[radio-secure]
+exten => ${NODE},1,rpt,${NODE}
+
+[iaxrpt]                                ; entered from iaxrpt in iax.conf
+exten => ${NODE},1,rpt(${NODE}|X)       ; NODE is the Name field in iaxrpt
+                                        ; Info: The X option passed to the Rpt application
+                                        ; disables the normal security checks.
+                                        ; Because incoming connections are validated in iax.conf,
+                                        ; and we don't know where the user will be coming from in advance,
+                                        ; the X option is required.
+
+[iax-client]				; for IAX VIOP clients.				
+exten => ${NODE},1,Ringing
+exten => ${NODE},n,Wait(3)
+exten => ${NODE},n,Answer
+exten => ${NODE},n,Set(NODENUM=${CALLERID(number)})
+exten => ${NODE},n,Playback(rpt/node|noanswer)
+exten => ${NODE},n,SayDigits(${EXTEN})
+exten => ${NODE},n,Set(CALLERID(num)=0)
+exten => ${NODE},n,Rpt,${NODE}|P|${CALLERID(name)}
+exten => ${NODE},n,Hangup
+exten => ${NODE},n(hangit),Answer
+exten => ${NODE},n(hangit),Wait(1)
+exten => ${NODE},n(hangit),Hangup
+
+; Comment-out the following clause if you want Allstar Autopatch service
+[pstn-out]
+exten = _NXXNXXXXXX,1,playback(ss-noservice)
+exten = _NXXNXXXXXX,2,Congestion
+
+; Un-comment out the following clause if you want Allstar Autopatch service
+;[pstn-out]
+;exten = _NXXNXXXXXX,1,Dial(IAX2/allstar-autopatch/\${EXTEN})
+;exten = _NXXNXXXXXX,2,Busy
+
+[invalidnum]
+exten = s,1,Wait,3
+exten = s,n,Playback,ss-noservice
+exten = s,n,Wait,1
+exten =  s,n,Hangup
+
+[radio]
+exten = _X11,1,Goto(check_route|${EXTEN}|1);
+exten = _NXXXXXX,1,Goto(check_route|1${HOMENPA}${EXTEN}|1)
+exten = _1XXXXXXXXXX,1,Goto(check_route|${EXTEN}|1)
+exten = _07XX,1,Goto(parkedcalls|${EXTEN:1}|1)
+exten = 00,1,Goto(my-ip|s|1)
+
+[check_route]
+exten =_X.,1,Noop(${EXTEN})
+; no 800
+exten = _1800NXXXXXX,2,Goto(invalidnum|s|1)
+exten = _1888NXXXXXX,2,Goto(invalidnum|s|1)
+exten = _1877NXXXXXX,2,Goto(invalidnum|s|1)
+exten = _1866NXXXXXX,2,Goto(invalidnum|s|1)
+exten = _1855NXXXXXX,2,Goto(invalidnum|s|1)
+; no X00 NPA
+exten = _1X00XXXXXXX,2,Goto(invalidnum|s|1)
+; no X11 NPA
+exten = _1X11XXXXXXX,2,Goto(invalidnum|s|1)
+; no X11 
+exten = _X11,2,Goto(invalidnum|s|1)
+; no 555 Prefix in any NPA
+exten = _1NXX555XXXX,2,Goto(invalidnum|s|1)
+; no 976 Prefix in any NPA
+exten = _1NXX976XXXX,2,Goto(invalidnum|s|1)
+; no NPA=809
+exten = _1809XXXXXXX,2,Goto(invalidnum|s|1)
+; no NPA=900
+exten = _1900XXXXXXX,2,Goto(invalidnum|s|1)
+
+; okay, route it
+exten = _1NXXXXXXXXX,2,Goto(pstn-out|${EXTEN:1}|1)
+exten = _X.,2,Goto(invalidnum|s|1)
+
+[my-ip]
+exten = s,1,Set(MYADDR=${CURL(http://myip.vg)})
+exten = s,2,Wait,1
+exten = s,3,SayAlpha(${MYADDR})
+exten = s,4,Hangup
+
+[allstar-sys]
+exten => _1.,1,Rpt(${EXTEN:1}|Rrpt/node:NODE:rpt/in-call:digits/0:PARKED|120)
+exten => _1.,n,Hangup
+
+exten => _2.,1,Ringing
+exten => _2.,n,Wait(3)
+exten => _2.,n,Answer
+exten => _2.,n,Playback(rpt/node)
+exten => _2.,n,Saydigits(${EXTEN:1})
+exten => _2.,n,Rpt(${EXTEN:1}|P|${CALLERID(name)}-P)
+exten => _2.,n,Hangup
+
+exten => _3.,1,Ringing
+exten => _3.,n,Wait(3)
+exten => _3.,n,Answer
+exten => _3.,n,Playback(rpt/node)
+exten => _3.,n,Saydigits(${EXTEN:1})
+exten => _3.,n,Rpt(${EXTEN:1}|Pv|${CALLERID(name)}-P)
+exten => _3.,n,Hangup
+
+exten => _4.,1,Ringing
+exten => _4.,n,Wait(3)
+exten => _4.,n,Answer
+exten => _4.,n,Playback(rpt/node)
+exten => _4.,n,Saydigits(${EXTEN:1})
+exten => _4.,n,Rpt(${EXTEN:1}|D|${CALLERID(name)}-P)
+exten => _4.,n,Hangup
+
+exten => _5.,1,Ringing
+exten => _5.,n,Wait(3)
+exten => _5.,n,Answer
+exten => _5.,n,Playback(rpt/node)
+exten => _5.,n,Saydigits(${EXTEN:1})
+exten => _5.,n,Rpt(${EXTEN:1}|Dv|${CALLERID(name)}-P)
+exten => _5.,n,Hangup
+
+[allstar-public]
+
+exten => s,1,Ringing
+exten => s,n,Set(RESP=${CURL(https://register.allstarlink.org/cgi-bin/authwebphone.pl?${CALLERID(name)})})
+exten => s,n,Set(NODENUM=${CALLERID(number)})
+exten => s,n,GotoIf($["${RESP:0:1}" = "?"]?hangit)
+exten => s,n,GotoIf($["${RESP:0:1}" = ""]?hangit)
+exten => s,n,GotoIf($["${RESP:0:5}" != "OHYES"]?hangit)
+exten => s,n,Set(CALLSIGN=${RESP:5})
+exten => s,n,Wait(3)
+exten => s,n,Playback(rpt/node|noanswer)
+exten => s,n,Saydigits(${NODENUM})
+exten => s,n,Set(CALLERID(name)=${CALLSIGN})
+exten => s,n,Set(CALLERID(num)=0)
+exten => s,n,Rpt(${NODENUM}|X)
+exten => s,n,Hangup
+exten => s,n(hangit),Answer
+exten => s,n(hangit),Wait(1)
+exten => s,n(hangit),Hangup
+
+#includeifexists custom/extensions.conf
+EOF
+
+cat << EOF > /etc/asl/user1/modules.conf
+;
+; Asterisk configuration file
+;
+; Module Loader configuration file
+;
+; By default AllStarLink does NOT load every module, only what is needed
+
+; You can enable or disable any of the asterisk modules
+; All modules are compiled and installed.
+
+; These are examples ONLY DO NOT UNCOMMENT them here. 
+
+; You will want to enable the channel driver modules you will be using.
+; They are below in the Channel Driver section
+; The most common Channel drivers for app_rpt are:
+; chan_echolink.so   echolink channel driver
+; chan_simpleusb.so  Simple USB Radio Interface Channel Drive
+; chan_usbradio.so   USB Console Channel Driver
+; chan_usrp.so       USRP Channel Module
+; chan_voter.so      radio Voter channel driver
+
+; To enable a module: load => module_name.so
+; To disable a module: noload => module_name.so
+
+
+[modules]
+
+autoload=no
+
+; Applications
+
+noload => app_adsiprog.so ;			Asterisk ADSI Programming Application             
+noload => app_alarmreceiver.so ;		Alarm Receiver for Asterisk                       
+noload => app_amd.so ;				Answering Machine Detection Application           
+load => app_authenticate.so ;            	Authentication Application                        
+noload => app_cdr.so ;				Tell Asterisk to not maintain a CDR for           
+noload => app_chanisavail.so ;			Check channel availability                        
+noload => app_channelredirect.so ;		Channel Redirect                                  
+noload => app_chanspy.so ;			Listen to the audio of an active channel          
+noload => app_controlplayback.so ;		Control Playback Application                      
+noload => app_dahdibarge.so ;			Barge in on channel application                   
+noload => app_dahdiras.so ;			DAHDI RAS Application                             
+noload => app_dahdiscan.so ;			Scan Zap channels application                     
+noload => app_db.so ;				Database Access Functions                         
+load => app_dial.so ;				Dialing Application                               
+noload => app_dictate.so ;			Virtual Dictation Machine                         
+noload => app_directed_pickup.so ;		Directed Call Pickup Application                  
+noload => app_directory.so ;			Extension Directory                               
+noload => app_disa.so ;				DISA (Direct Inward System Access) Appli          
+noload => app_dumpchan.so ;			Dump Info About The Calling Channel               
+noload => app_echo.so ;				Simple Echo Application                           
+load => app_exec.so ;				Executes dialplan applications                    
+noload => app_externalivr.so ;			External IVR Interface Application                
+noload => app_festival.so ;			Simple Festival Interface                         
+noload => app_flash.so ;			Flash channel application                         
+noload => app_followme.so ;			Find-Me/Follow-Me Application                     
+noload => app_forkcdr.so ;			Fork The CDR into 2 separate entities             
+noload => app_getcpeid.so ;			Get ADSI CPE ID                                   
+noload => app_gps.so ;				GPS interface module                              
+noload => app_hasnewvoicemail.so ;		Indicator for whether a voice mailbox ha          
+noload => app_ices.so ;				Encode and Stream via icecast and ices            
+noload => app_image.so ;			Image Transmission Application                    
+noload => app_lookupblacklist.so ;		Look up Caller*ID name/number from black          
+noload => app_lookupcidname.so ;		Look up CallerID Name from local databas          
+load => app_macro.so ;				Extension Macros                                  
+noload => app_meetme.so ;			MeetMe conference bridge                          
+noload => app_milliwatt.so ;			Digital Milliwatt (mu-law) Test Applicat          
+noload => app_mixmonitor.so ;			Mixed Audio Monitoring Application                
+noload => app_morsecode.so ;			Morse code                                        
+noload => app_mp3.so ;				Silly MP3 Application                             
+noload => app_nbscat.so ;			Silly NBS Stream Application                      
+noload => app_page.so ;				Page Multiple Phones                              
+noload => app_parkandannounce.so ;		Call Parking and Announce Application             
+load => app_playback.so ;			Sound File Playback Application                   
+noload => app_privacy.so ;			Require phone number to be entered, if n          
+noload => app_queue.so ;			True Call Queueing                                
+noload => app_radbridge.so ;			Radio Bridging interface module                   
+noload => app_random.so ;			Random goto                                       
+noload => app_readfile.so ;			Stores output of file into a variable             
+noload => app_read.so ;				Read Variable Application                         
+noload => app_realtime.so ;			Realtime Data Lookup/Rewrite                      
+noload => app_record.so ;			Trivial Record Application                        
+load => app_rpt.so ;				Radio Repeater/Remote Base Application            
+noload => app_sayunixtime.so ;			Say time                                          
+noload => app_senddtmf.so ;			Send DTMF digits Application                      
+load => app_sendtext.so ;			Send Text Applications                            
+noload => app_setcallerid.so ;			Set CallerID Application                          
+noload => app_setcdruserfield.so ;		CDR user field apps                               
+noload => app_settransfercapability.so ;	Set ISDN Transfer Capability                      
+noload => app_sms.so ;				SMS/PSTN handler                                  
+noload => app_softhangup.so ;			Hangs up the requested channel                    
+noload => app_speech_utils.so ;			Dialplan Speech Applications                      
+noload => app_stack.so ;			Stack Routines                                    
+load => app_system.so ;				Generic System() application                      
+noload => app_talkdetect.so ;			Playback with Talk Detection                      
+noload => app_test.so ;				Interface Test Application                        
+load => app_transfer.so ;			Transfer                                          
+noload => app_url.so ;				Send URL Applications                             
+noload => app_userevent.so ;			Custom User Event Application                     
+noload => app_verbose.so ;			Send verbose output                               
+noload => app_voicemail.so ;			Comedian Mail (Voicemail System)                  
+noload => app_waitforring.so ;			Waits until first ring after time                 
+noload => app_waitforsilence.so ;		Wait For Silence                                  
+noload => app_while.so ;			While Loops and Conditional Execution             
+noload => app_zapateller.so ;			Block Telemarketers with Special Informa          
+
+; CDR
+
+noload => cdr_csv.so ;				Comma Separated Values CDR Backend                
+noload => cdr_custom.so ;			Customizable Comma Separated Values CDR           
+noload => cdr_manager.so ;			Asterisk Manager Interface CDR Backend            
+
+; Channels
+
+noload => chan_agent.so ;			Agent Proxy Channel                               
+noload => chan_alsa.so ;			ALSA Console Channel Driver
+noload => chan_beagle.so ;			Beagleboard Radio Interface Channel Driver          
+load => chan_dahdi.so ;				DAHDI Telephony                                   
+noload => chan_echolink.so ;			echolink Channel Driver                           
+noload => chan_features.so ;			Feature Proxy Channel                             
+noload => chan_gtalk.so ;			Gtalk Channel Driver                              
+load => chan_iax2.so ;				Inter Asterisk eXchange (Ver 2)                   
+load => chan_local.so ;				Local Proxy Channel (Note: used internal          
+noload => chan_oss.so ;				Channel driver for OSS sound cards
+noload => chan_phone.so ;			Generic Linux Telephony Interface driver
+noload => chan_pi.so ;				DMK Engineering "PITA" Board on Rpi2/3 Channel Driver
+noload => chan_simpleusb.so ;			CM1xx USB Cards with Radio Interface Channel Driver (No DSP)          
+noload => chan_sip.so ;				Session Initiation Protocol (SIP)                 
+noload => chan_tlb.so ;				TheLinkBox Channel Driver                         
+noload => chan_usbradio.so ;			CM1xx USB Cards with Radio Interface Channel Driver (DSP)                        
+noload => chan_usrp.so ;			GNU Radio interface USRP Channel Driver                              
+noload => chan_voter.so ;			Radio Voter Channel Driver                        
+
+; Codecs
+
+; CODEC          AUDIO QUALITY   BANDWIDTH (including IP and Ethernet headers)
+; ULAW           best            87 kilobits per second (kbps)
+; ADPCM          good            55 kbps
+; GSM            mediocre        36 kbps
+; g726aal2
+; ilbc				 28 kbps
+; g722
+
+
+
+load => codec_adpcm.so ;			Adaptive Differential PCM Coder/Decoder           
+load => codec_alaw.so ;				A-law Coder/Decoder                               
+load => codec_a_mu.so ;				A-law and Mulaw direct Coder/Decoder              
+noload => codec_dahdi.so ;			Generic DAHDI Transcoder Codec Translato          
+load => codec_g722.so ;
+load => codec_g726.so ;				ITU G.726-32kbps G726 Transcoder                  
+load => codec_gsm.so ;				GSM Coder/Decoder                                 
+load => codec_ulaw.so ;				mu-Law Coder/Decoder                              
+load => codec_ilbc.so ;				http://en.wikipedia.org/wiki/Internet_Low_Bitrate_Codec
+; Formats
+
+load => format_g723.so ;			G.723.1 Simple Timestamp File Format     
+load => format_g726.so ;			Raw G.726 (16/24/32/40kbps) data                  
+load => format_g729.so ;			Raw G729 data                                     
+load => format_gsm.so ;				Raw GSM data                                      
+load => format_h263.so ;			Raw H.263 data                                    
+load => format_h264.so ;			Raw H.264 data                                    
+load => format_ilbc.so ;			Raw iLBC data                                     
+noload => format_jpeg.so ;			JPEG (Joint Picture Experts Group) Image          
+load => format_pcm.so ;				Raw/Sun uLaw/ALaw 8KHz (PCM,PCMA,AU), G.          
+load => format_sln.so ;				Raw Signed Linear Audio support (SLN)             
+load => format_vox.so ;				Dialogic VOX (ADPCM) File Format                  
+load => format_wav_gsm.so ;			Microsoft WAV format (Proprietary GSM)            
+load => format_wav.so ;				Microsoft WAV format (8000Hz Signed Line          
+
+; Functions
+
+load => func_base64.so ;			base64 encode/decode dialplan functions           
+load => func_callerid.so ;			Caller ID related dialplan function               
+load => func_cdr.so ;				CDR dialplan function                             
+load => func_channel.so ;			Channel information dialplan function             
+load => func_curl.so ;				Load external URL                                 
+load => func_cut.so ;				Cut out information from a string                 
+load => func_db.so ;				Database (astdb) related dialplan functi          
+load => func_enum.so ;				ENUM related dialplan functions                   
+load => func_env.so ;				Environment/filesystem dialplan function          
+load => func_global.so ;			Global variable dialplan functions                
+load => func_groupcount.so ;			Channel group dialplan functions                  
+load => func_language.so ;			Channel language dialplan function                
+load => func_logic.so ;				Logical dialplan functions                        
+load => func_math.so ;				Mathematical dialplan function                    
+load => func_md5.so ;				MD5 digest dialplan functions                     
+load => func_moh.so ;				Music-on-hold dialplan function                   
+load => func_rand.so ;				Random number dialplan function                   
+load => func_realtime.so ;			Read/Write values from a RealTime reposi          
+noload => func_sha1.so ;			SHA-1 computation dialplan function               
+noload => func_strings.so ;			String handling dialplan functions                
+noload => func_timeout.so ;			Channel timeout dialplan functions                
+noload => func_uri.so ;				URI encode/decode dialplan functions              
+
+; PBX
+
+noload => pbx_ael.so ;				Asterisk Extension Language Compiler              
+load => pbx_config.so ;				Text Extension Configuration                      
+noload => pbx_dundi.so ;			Distributed Universal Number Discovery (          
+noload => pbx_loopback.so ;			Loopback Switch                                   
+noload => pbx_realtime.so ;			Realtime Switch                                   
+noload => pbx_spool.so ;			Outgoing Spool Support                            
+
+; Resources
+
+load => res_adsi.so ;				ADSI Resource                                     
+noload => res_agi.so ;				Asterisk Gateway Interface (AGI)                  
+noload => res_clioriginate.so ;			Call origination from the CLI                     
+noload => res_convert.so ;			File format conversion CLI command                
+load => res_crypto.so ;				Cryptographic Digital Signatures                  
+load => res_features.so ;			Call Features Resource                            
+load => res_indications.so ;			Indications Resource                              
+noload => res_jabber.so ;			AJI - Asterisk Jabber Interface                   
+noload => res_monitor.so ;			Call Monitoring Resource                          
+noload => res_musiconhold.so ;			Music On Hold Resource                            
+load => res_smdi.so ;				Simplified Message Desk Interface (SMDI)          
+noload => res_snmp.so ;				SNMP [Sub]Agent for Asterisk                      
+noload => res_speech.so ;			Generic Speech Recognition API                    
+
+[global]
+EOF
+
+cat << EOF > /etc/asl/user2/modules.conf
+;
+; Asterisk configuration file
+;
+; Module Loader configuration file
+;
+; By default AllStarLink does NOT load every module, only what is needed
+
+; You can enable or disable any of the asterisk modules
+; All modules are compiled and installed.
+
+; These are examples ONLY DO NOT UNCOMMENT them here. 
+
+; You will want to enable the channel driver modules you will be using.
+; They are below in the Channel Driver section
+; The most common Channel drivers for app_rpt are:
+; chan_echolink.so   echolink channel driver
+; chan_simpleusb.so  Simple USB Radio Interface Channel Drive
+; chan_usbradio.so   USB Console Channel Driver
+; chan_usrp.so       USRP Channel Module
+; chan_voter.so      radio Voter channel driver
+
+; To enable a module: load => module_name.so
+; To disable a module: noload => module_name.so
+
+
+[modules]
+
+autoload=no
+
+; Applications
+
+noload => app_adsiprog.so ;			Asterisk ADSI Programming Application             
+noload => app_alarmreceiver.so ;		Alarm Receiver for Asterisk                       
+noload => app_amd.so ;				Answering Machine Detection Application           
+load => app_authenticate.so ;            	Authentication Application                        
+noload => app_cdr.so ;				Tell Asterisk to not maintain a CDR for           
+noload => app_chanisavail.so ;			Check channel availability                        
+noload => app_channelredirect.so ;		Channel Redirect                                  
+noload => app_chanspy.so ;			Listen to the audio of an active channel          
+noload => app_controlplayback.so ;		Control Playback Application                      
+noload => app_dahdibarge.so ;			Barge in on channel application                   
+noload => app_dahdiras.so ;			DAHDI RAS Application                             
+noload => app_dahdiscan.so ;			Scan Zap channels application                     
+noload => app_db.so ;				Database Access Functions                         
+load => app_dial.so ;				Dialing Application                               
+noload => app_dictate.so ;			Virtual Dictation Machine                         
+noload => app_directed_pickup.so ;		Directed Call Pickup Application                  
+noload => app_directory.so ;			Extension Directory                               
+noload => app_disa.so ;				DISA (Direct Inward System Access) Appli          
+noload => app_dumpchan.so ;			Dump Info About The Calling Channel               
+noload => app_echo.so ;				Simple Echo Application                           
+load => app_exec.so ;				Executes dialplan applications                    
+noload => app_externalivr.so ;			External IVR Interface Application                
+noload => app_festival.so ;			Simple Festival Interface                         
+noload => app_flash.so ;			Flash channel application                         
+noload => app_followme.so ;			Find-Me/Follow-Me Application                     
+noload => app_forkcdr.so ;			Fork The CDR into 2 separate entities             
+noload => app_getcpeid.so ;			Get ADSI CPE ID                                   
+noload => app_gps.so ;				GPS interface module                              
+noload => app_hasnewvoicemail.so ;		Indicator for whether a voice mailbox ha          
+noload => app_ices.so ;				Encode and Stream via icecast and ices            
+noload => app_image.so ;			Image Transmission Application                    
+noload => app_lookupblacklist.so ;		Look up Caller*ID name/number from black          
+noload => app_lookupcidname.so ;		Look up CallerID Name from local databas          
+load => app_macro.so ;				Extension Macros                                  
+noload => app_meetme.so ;			MeetMe conference bridge                          
+noload => app_milliwatt.so ;			Digital Milliwatt (mu-law) Test Applicat          
+noload => app_mixmonitor.so ;			Mixed Audio Monitoring Application                
+noload => app_morsecode.so ;			Morse code                                        
+noload => app_mp3.so ;				Silly MP3 Application                             
+noload => app_nbscat.so ;			Silly NBS Stream Application                      
+noload => app_page.so ;				Page Multiple Phones                              
+noload => app_parkandannounce.so ;		Call Parking and Announce Application             
+load => app_playback.so ;			Sound File Playback Application                   
+noload => app_privacy.so ;			Require phone number to be entered, if n          
+noload => app_queue.so ;			True Call Queueing                                
+noload => app_radbridge.so ;			Radio Bridging interface module                   
+noload => app_random.so ;			Random goto                                       
+noload => app_readfile.so ;			Stores output of file into a variable             
+noload => app_read.so ;				Read Variable Application                         
+noload => app_realtime.so ;			Realtime Data Lookup/Rewrite                      
+noload => app_record.so ;			Trivial Record Application                        
+load => app_rpt.so ;				Radio Repeater/Remote Base Application            
+noload => app_sayunixtime.so ;			Say time                                          
+noload => app_senddtmf.so ;			Send DTMF digits Application                      
+load => app_sendtext.so ;			Send Text Applications                            
+noload => app_setcallerid.so ;			Set CallerID Application                          
+noload => app_setcdruserfield.so ;		CDR user field apps                               
+noload => app_settransfercapability.so ;	Set ISDN Transfer Capability                      
+noload => app_sms.so ;				SMS/PSTN handler                                  
+noload => app_softhangup.so ;			Hangs up the requested channel                    
+noload => app_speech_utils.so ;			Dialplan Speech Applications                      
+noload => app_stack.so ;			Stack Routines                                    
+load => app_system.so ;				Generic System() application                      
+noload => app_talkdetect.so ;			Playback with Talk Detection                      
+noload => app_test.so ;				Interface Test Application                        
+load => app_transfer.so ;			Transfer                                          
+noload => app_url.so ;				Send URL Applications                             
+noload => app_userevent.so ;			Custom User Event Application                     
+noload => app_verbose.so ;			Send verbose output                               
+noload => app_voicemail.so ;			Comedian Mail (Voicemail System)                  
+noload => app_waitforring.so ;			Waits until first ring after time                 
+noload => app_waitforsilence.so ;		Wait For Silence                                  
+noload => app_while.so ;			While Loops and Conditional Execution             
+noload => app_zapateller.so ;			Block Telemarketers with Special Informa          
+
+; CDR
+
+noload => cdr_csv.so ;				Comma Separated Values CDR Backend                
+noload => cdr_custom.so ;			Customizable Comma Separated Values CDR           
+noload => cdr_manager.so ;			Asterisk Manager Interface CDR Backend            
+
+; Channels
+
+noload => chan_agent.so ;			Agent Proxy Channel                               
+noload => chan_alsa.so ;			ALSA Console Channel Driver
+noload => chan_beagle.so ;			Beagleboard Radio Interface Channel Driver          
+load => chan_dahdi.so ;				DAHDI Telephony                                   
+noload => chan_echolink.so ;			echolink Channel Driver                           
+noload => chan_features.so ;			Feature Proxy Channel                             
+noload => chan_gtalk.so ;			Gtalk Channel Driver                              
+load => chan_iax2.so ;				Inter Asterisk eXchange (Ver 2)                   
+load => chan_local.so ;				Local Proxy Channel (Note: used internal          
+noload => chan_oss.so ;				Channel driver for OSS sound cards
+noload => chan_phone.so ;			Generic Linux Telephony Interface driver
+noload => chan_pi.so ;				DMK Engineering "PITA" Board on Rpi2/3 Channel Driver
+noload => chan_simpleusb.so ;			CM1xx USB Cards with Radio Interface Channel Driver (No DSP)          
+noload => chan_sip.so ;				Session Initiation Protocol (SIP)                 
+noload => chan_tlb.so ;				TheLinkBox Channel Driver                         
+noload => chan_usbradio.so ;			CM1xx USB Cards with Radio Interface Channel Driver (DSP)                        
+noload => chan_usrp.so ;			GNU Radio interface USRP Channel Driver                              
+noload => chan_voter.so ;			Radio Voter Channel Driver                        
+
+; Codecs
+
+; CODEC          AUDIO QUALITY   BANDWIDTH (including IP and Ethernet headers)
+; ULAW           best            87 kilobits per second (kbps)
+; ADPCM          good            55 kbps
+; GSM            mediocre        36 kbps
+; g726aal2
+; ilbc				 28 kbps
+; g722
+
+
+
+load => codec_adpcm.so ;			Adaptive Differential PCM Coder/Decoder           
+load => codec_alaw.so ;				A-law Coder/Decoder                               
+load => codec_a_mu.so ;				A-law and Mulaw direct Coder/Decoder              
+noload => codec_dahdi.so ;			Generic DAHDI Transcoder Codec Translato          
+load => codec_g722.so ;
+load => codec_g726.so ;				ITU G.726-32kbps G726 Transcoder                  
+load => codec_gsm.so ;				GSM Coder/Decoder                                 
+load => codec_ulaw.so ;				mu-Law Coder/Decoder                              
+load => codec_ilbc.so ;				http://en.wikipedia.org/wiki/Internet_Low_Bitrate_Codec
+; Formats
+
+load => format_g723.so ;			G.723.1 Simple Timestamp File Format     
+load => format_g726.so ;			Raw G.726 (16/24/32/40kbps) data                  
+load => format_g729.so ;			Raw G729 data                                     
+load => format_gsm.so ;				Raw GSM data                                      
+load => format_h263.so ;			Raw H.263 data                                    
+load => format_h264.so ;			Raw H.264 data                                    
+load => format_ilbc.so ;			Raw iLBC data                                     
+noload => format_jpeg.so ;			JPEG (Joint Picture Experts Group) Image          
+load => format_pcm.so ;				Raw/Sun uLaw/ALaw 8KHz (PCM,PCMA,AU), G.          
+load => format_sln.so ;				Raw Signed Linear Audio support (SLN)             
+load => format_vox.so ;				Dialogic VOX (ADPCM) File Format                  
+load => format_wav_gsm.so ;			Microsoft WAV format (Proprietary GSM)            
+load => format_wav.so ;				Microsoft WAV format (8000Hz Signed Line          
+
+; Functions
+
+load => func_base64.so ;			base64 encode/decode dialplan functions           
+load => func_callerid.so ;			Caller ID related dialplan function               
+load => func_cdr.so ;				CDR dialplan function                             
+load => func_channel.so ;			Channel information dialplan function             
+load => func_curl.so ;				Load external URL                                 
+load => func_cut.so ;				Cut out information from a string                 
+load => func_db.so ;				Database (astdb) related dialplan functi          
+load => func_enum.so ;				ENUM related dialplan functions                   
+load => func_env.so ;				Environment/filesystem dialplan function          
+load => func_global.so ;			Global variable dialplan functions                
+load => func_groupcount.so ;			Channel group dialplan functions                  
+load => func_language.so ;			Channel language dialplan function                
+load => func_logic.so ;				Logical dialplan functions                        
+load => func_math.so ;				Mathematical dialplan function                    
+load => func_md5.so ;				MD5 digest dialplan functions                     
+load => func_moh.so ;				Music-on-hold dialplan function                   
+load => func_rand.so ;				Random number dialplan function                   
+load => func_realtime.so ;			Read/Write values from a RealTime reposi          
+noload => func_sha1.so ;			SHA-1 computation dialplan function               
+noload => func_strings.so ;			String handling dialplan functions                
+noload => func_timeout.so ;			Channel timeout dialplan functions                
+noload => func_uri.so ;				URI encode/decode dialplan functions              
+
+; PBX
+
+noload => pbx_ael.so ;				Asterisk Extension Language Compiler              
+load => pbx_config.so ;				Text Extension Configuration                      
+noload => pbx_dundi.so ;			Distributed Universal Number Discovery (          
+noload => pbx_loopback.so ;			Loopback Switch                                   
+noload => pbx_realtime.so ;			Realtime Switch                                   
+noload => pbx_spool.so ;			Outgoing Spool Support                            
+
+; Resources
+
+load => res_adsi.so ;				ADSI Resource                                     
+noload => res_agi.so ;				Asterisk Gateway Interface (AGI)                  
+noload => res_clioriginate.so ;			Call origination from the CLI                     
+noload => res_convert.so ;			File format conversion CLI command                
+load => res_crypto.so ;				Cryptographic Digital Signatures                  
+load => res_features.so ;			Call Features Resource                            
+load => res_indications.so ;			Indications Resource                              
+noload => res_jabber.so ;			AJI - Asterisk Jabber Interface                   
+noload => res_monitor.so ;			Call Monitoring Resource                          
+noload => res_musiconhold.so ;			Music On Hold Resource                            
+load => res_smdi.so ;				Simplified Message Desk Interface (SMDI)          
+noload => res_snmp.so ;				SNMP [Sub]Agent for Asterisk                      
+noload => res_speech.so ;			Generic Speech Recognition API                    
+
+[global]
+EOF
+
+cat << EOF > /etc/asl/user3/modules.conf
+;
+; Asterisk configuration file
+;
+; Module Loader configuration file
+;
+; By default AllStarLink does NOT load every module, only what is needed
+
+; You can enable or disable any of the asterisk modules
+; All modules are compiled and installed.
+
+; These are examples ONLY DO NOT UNCOMMENT them here. 
+
+; You will want to enable the channel driver modules you will be using.
+; They are below in the Channel Driver section
+; The most common Channel drivers for app_rpt are:
+; chan_echolink.so   echolink channel driver
+; chan_simpleusb.so  Simple USB Radio Interface Channel Drive
+; chan_usbradio.so   USB Console Channel Driver
+; chan_usrp.so       USRP Channel Module
+; chan_voter.so      radio Voter channel driver
+
+; To enable a module: load => module_name.so
+; To disable a module: noload => module_name.so
+
+
+[modules]
+
+autoload=no
+
+; Applications
+
+noload => app_adsiprog.so ;			Asterisk ADSI Programming Application             
+noload => app_alarmreceiver.so ;		Alarm Receiver for Asterisk                       
+noload => app_amd.so ;				Answering Machine Detection Application           
+load => app_authenticate.so ;            	Authentication Application                        
+noload => app_cdr.so ;				Tell Asterisk to not maintain a CDR for           
+noload => app_chanisavail.so ;			Check channel availability                        
+noload => app_channelredirect.so ;		Channel Redirect                                  
+noload => app_chanspy.so ;			Listen to the audio of an active channel          
+noload => app_controlplayback.so ;		Control Playback Application                      
+noload => app_dahdibarge.so ;			Barge in on channel application                   
+noload => app_dahdiras.so ;			DAHDI RAS Application                             
+noload => app_dahdiscan.so ;			Scan Zap channels application                     
+noload => app_db.so ;				Database Access Functions                         
+load => app_dial.so ;				Dialing Application                               
+noload => app_dictate.so ;			Virtual Dictation Machine                         
+noload => app_directed_pickup.so ;		Directed Call Pickup Application                  
+noload => app_directory.so ;			Extension Directory                               
+noload => app_disa.so ;				DISA (Direct Inward System Access) Appli          
+noload => app_dumpchan.so ;			Dump Info About The Calling Channel               
+noload => app_echo.so ;				Simple Echo Application                           
+load => app_exec.so ;				Executes dialplan applications                    
+noload => app_externalivr.so ;			External IVR Interface Application                
+noload => app_festival.so ;			Simple Festival Interface                         
+noload => app_flash.so ;			Flash channel application                         
+noload => app_followme.so ;			Find-Me/Follow-Me Application                     
+noload => app_forkcdr.so ;			Fork The CDR into 2 separate entities             
+noload => app_getcpeid.so ;			Get ADSI CPE ID                                   
+noload => app_gps.so ;				GPS interface module                              
+noload => app_hasnewvoicemail.so ;		Indicator for whether a voice mailbox ha          
+noload => app_ices.so ;				Encode and Stream via icecast and ices            
+noload => app_image.so ;			Image Transmission Application                    
+noload => app_lookupblacklist.so ;		Look up Caller*ID name/number from black          
+noload => app_lookupcidname.so ;		Look up CallerID Name from local databas          
+load => app_macro.so ;				Extension Macros                                  
+noload => app_meetme.so ;			MeetMe conference bridge                          
+noload => app_milliwatt.so ;			Digital Milliwatt (mu-law) Test Applicat          
+noload => app_mixmonitor.so ;			Mixed Audio Monitoring Application                
+noload => app_morsecode.so ;			Morse code                                        
+noload => app_mp3.so ;				Silly MP3 Application                             
+noload => app_nbscat.so ;			Silly NBS Stream Application                      
+noload => app_page.so ;				Page Multiple Phones                              
+noload => app_parkandannounce.so ;		Call Parking and Announce Application             
+load => app_playback.so ;			Sound File Playback Application                   
+noload => app_privacy.so ;			Require phone number to be entered, if n          
+noload => app_queue.so ;			True Call Queueing                                
+noload => app_radbridge.so ;			Radio Bridging interface module                   
+noload => app_random.so ;			Random goto                                       
+noload => app_readfile.so ;			Stores output of file into a variable             
+noload => app_read.so ;				Read Variable Application                         
+noload => app_realtime.so ;			Realtime Data Lookup/Rewrite                      
+noload => app_record.so ;			Trivial Record Application                        
+load => app_rpt.so ;				Radio Repeater/Remote Base Application            
+noload => app_sayunixtime.so ;			Say time                                          
+noload => app_senddtmf.so ;			Send DTMF digits Application                      
+load => app_sendtext.so ;			Send Text Applications                            
+noload => app_setcallerid.so ;			Set CallerID Application                          
+noload => app_setcdruserfield.so ;		CDR user field apps                               
+noload => app_settransfercapability.so ;	Set ISDN Transfer Capability                      
+noload => app_sms.so ;				SMS/PSTN handler                                  
+noload => app_softhangup.so ;			Hangs up the requested channel                    
+noload => app_speech_utils.so ;			Dialplan Speech Applications                      
+noload => app_stack.so ;			Stack Routines                                    
+load => app_system.so ;				Generic System() application                      
+noload => app_talkdetect.so ;			Playback with Talk Detection                      
+noload => app_test.so ;				Interface Test Application                        
+load => app_transfer.so ;			Transfer                                          
+noload => app_url.so ;				Send URL Applications                             
+noload => app_userevent.so ;			Custom User Event Application                     
+noload => app_verbose.so ;			Send verbose output                               
+noload => app_voicemail.so ;			Comedian Mail (Voicemail System)                  
+noload => app_waitforring.so ;			Waits until first ring after time                 
+noload => app_waitforsilence.so ;		Wait For Silence                                  
+noload => app_while.so ;			While Loops and Conditional Execution             
+noload => app_zapateller.so ;			Block Telemarketers with Special Informa          
+
+; CDR
+
+noload => cdr_csv.so ;				Comma Separated Values CDR Backend                
+noload => cdr_custom.so ;			Customizable Comma Separated Values CDR           
+noload => cdr_manager.so ;			Asterisk Manager Interface CDR Backend            
+
+; Channels
+
+noload => chan_agent.so ;			Agent Proxy Channel                               
+noload => chan_alsa.so ;			ALSA Console Channel Driver
+noload => chan_beagle.so ;			Beagleboard Radio Interface Channel Driver          
+load => chan_dahdi.so ;				DAHDI Telephony                                   
+noload => chan_echolink.so ;			echolink Channel Driver                           
+noload => chan_features.so ;			Feature Proxy Channel                             
+noload => chan_gtalk.so ;			Gtalk Channel Driver                              
+load => chan_iax2.so ;				Inter Asterisk eXchange (Ver 2)                   
+load => chan_local.so ;				Local Proxy Channel (Note: used internal          
+noload => chan_oss.so ;				Channel driver for OSS sound cards
+noload => chan_phone.so ;			Generic Linux Telephony Interface driver
+noload => chan_pi.so ;				DMK Engineering "PITA" Board on Rpi2/3 Channel Driver
+noload => chan_simpleusb.so ;			CM1xx USB Cards with Radio Interface Channel Driver (No DSP)          
+noload => chan_sip.so ;				Session Initiation Protocol (SIP)                 
+noload => chan_tlb.so ;				TheLinkBox Channel Driver                         
+noload => chan_usbradio.so ;			CM1xx USB Cards with Radio Interface Channel Driver (DSP)                        
+noload => chan_usrp.so ;			GNU Radio interface USRP Channel Driver                              
+noload => chan_voter.so ;			Radio Voter Channel Driver                        
+
+; Codecs
+
+; CODEC          AUDIO QUALITY   BANDWIDTH (including IP and Ethernet headers)
+; ULAW           best            87 kilobits per second (kbps)
+; ADPCM          good            55 kbps
+; GSM            mediocre        36 kbps
+; g726aal2
+; ilbc				 28 kbps
+; g722
+
+
+
+load => codec_adpcm.so ;			Adaptive Differential PCM Coder/Decoder           
+load => codec_alaw.so ;				A-law Coder/Decoder                               
+load => codec_a_mu.so ;				A-law and Mulaw direct Coder/Decoder              
+noload => codec_dahdi.so ;			Generic DAHDI Transcoder Codec Translato          
+load => codec_g722.so ;
+load => codec_g726.so ;				ITU G.726-32kbps G726 Transcoder                  
+load => codec_gsm.so ;				GSM Coder/Decoder                                 
+load => codec_ulaw.so ;				mu-Law Coder/Decoder                              
+load => codec_ilbc.so ;				http://en.wikipedia.org/wiki/Internet_Low_Bitrate_Codec
+; Formats
+
+load => format_g723.so ;			G.723.1 Simple Timestamp File Format     
+load => format_g726.so ;			Raw G.726 (16/24/32/40kbps) data                  
+load => format_g729.so ;			Raw G729 data                                     
+load => format_gsm.so ;				Raw GSM data                                      
+load => format_h263.so ;			Raw H.263 data                                    
+load => format_h264.so ;			Raw H.264 data                                    
+load => format_ilbc.so ;			Raw iLBC data                                     
+noload => format_jpeg.so ;			JPEG (Joint Picture Experts Group) Image          
+load => format_pcm.so ;				Raw/Sun uLaw/ALaw 8KHz (PCM,PCMA,AU), G.          
+load => format_sln.so ;				Raw Signed Linear Audio support (SLN)             
+load => format_vox.so ;				Dialogic VOX (ADPCM) File Format                  
+load => format_wav_gsm.so ;			Microsoft WAV format (Proprietary GSM)            
+load => format_wav.so ;				Microsoft WAV format (8000Hz Signed Line          
+
+; Functions
+
+load => func_base64.so ;			base64 encode/decode dialplan functions           
+load => func_callerid.so ;			Caller ID related dialplan function               
+load => func_cdr.so ;				CDR dialplan function                             
+load => func_channel.so ;			Channel information dialplan function             
+load => func_curl.so ;				Load external URL                                 
+load => func_cut.so ;				Cut out information from a string                 
+load => func_db.so ;				Database (astdb) related dialplan functi          
+load => func_enum.so ;				ENUM related dialplan functions                   
+load => func_env.so ;				Environment/filesystem dialplan function          
+load => func_global.so ;			Global variable dialplan functions                
+load => func_groupcount.so ;			Channel group dialplan functions                  
+load => func_language.so ;			Channel language dialplan function                
+load => func_logic.so ;				Logical dialplan functions                        
+load => func_math.so ;				Mathematical dialplan function                    
+load => func_md5.so ;				MD5 digest dialplan functions                     
+load => func_moh.so ;				Music-on-hold dialplan function                   
+load => func_rand.so ;				Random number dialplan function                   
+load => func_realtime.so ;			Read/Write values from a RealTime reposi          
+noload => func_sha1.so ;			SHA-1 computation dialplan function               
+noload => func_strings.so ;			String handling dialplan functions                
+noload => func_timeout.so ;			Channel timeout dialplan functions                
+noload => func_uri.so ;				URI encode/decode dialplan functions              
+
+; PBX
+
+noload => pbx_ael.so ;				Asterisk Extension Language Compiler              
+load => pbx_config.so ;				Text Extension Configuration                      
+noload => pbx_dundi.so ;			Distributed Universal Number Discovery (          
+noload => pbx_loopback.so ;			Loopback Switch                                   
+noload => pbx_realtime.so ;			Realtime Switch                                   
+noload => pbx_spool.so ;			Outgoing Spool Support                            
+
+; Resources
+
+load => res_adsi.so ;				ADSI Resource                                     
+noload => res_agi.so ;				Asterisk Gateway Interface (AGI)                  
+noload => res_clioriginate.so ;			Call origination from the CLI                     
+noload => res_convert.so ;			File format conversion CLI command                
+load => res_crypto.so ;				Cryptographic Digital Signatures                  
+load => res_features.so ;			Call Features Resource                            
+load => res_indications.so ;			Indications Resource                              
+noload => res_jabber.so ;			AJI - Asterisk Jabber Interface                   
+noload => res_monitor.so ;			Call Monitoring Resource                          
+noload => res_musiconhold.so ;			Music On Hold Resource                            
+load => res_smdi.so ;				Simplified Message Desk Interface (SMDI)          
+noload => res_snmp.so ;				SNMP [Sub]Agent for Asterisk                      
+noload => res_speech.so ;			Generic Speech Recognition API                    
+
+[global]
+EOF
+
+sleep 3
+echo "
 echo "ASL-PBX-Engine!"
