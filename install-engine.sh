@@ -43,19 +43,18 @@ systemctl restart docker
           mkdir -p /etc/asl/user3
           
 echo "Install configuration ..." 
-          cd /asterisk/configs
-	  cp -p rpt.conf.sample /etc/asl/user1/rpt.conf
-	  cp -p rpt.conf.sample /etc/asl/user2/rpt.conf
-	  cp -p rpt.conf.sample /etc/asl/user3/rpt.conf
-	  cp -p iax.conf.sample /etc/asl/user1/iax.conf
-	  cp -p iax.conf.sample /etc/asl/user2/iax.conf
-	  cp -p iax.conf.sample /etc/asl/user3/iax.conf
-	  cp -p extensions.conf.sample /etc/asl/user1/extensions.conf
-	  cp -p extensions.conf.sample /etc/asl/user2/extensions.conf
-	  cp -p extensions.conf.sample /etc/asl/user3/extensions.conf
-	  cp -p modules.conf.sample /etc/asl/user1/modules.conf
-	  cp -p modules.conf.sample /etc/asl/user2/modules.conf
-	  cp -p modules.conf.sample /etc/asl/user3/modules.conf
+	  cp -p /opt/PBX-ASL-Engine/asterisk/configs/rpt.conf.sample /etc/asl/user1/rpt.conf
+	  cp -p /opt/PBX-ASL-Engine/asterisk/configs/rpt.conf.sample /etc/asl/user2/rpt.conf
+	  cp -p /opt/PBX-ASL-Engine/asterisk/configs/rpt.conf.sample /etc/asl/user3/rpt.conf
+	  cp -p /opt/PBX-ASL-Engine/asterisk/configs/iax.conf.sample /etc/asl/user1/iax.conf
+	  cp -p /opt/PBX-ASL-Engine/asterisk/configs/iax.conf.sample /etc/asl/user2/iax.conf
+	  cp -p /opt/PBX-ASL-Engine/asterisk/configs/iax.conf.sample /etc/asl/user3/iax.conf
+	  cp -p /opt/PBX-ASL-Engine/asterisk/configs/extensions.conf.sample /etc/asl/user1/extensions.conf
+	  cp -p /opt/PBX-ASL-Engine/asterisk/configs/extensions.conf.sample /etc/asl/user2/extensions.conf
+	  cp -p /opt/PBX-ASL-Engine/asterisk/configs/extensions.conf.sample /etc/asl/user3/extensions.conf
+	  cp -p /opt/PBX-ASL-Engine/asterisk/configs/modules.conf.sample /etc/asl/user1/modules.conf
+	  cp -p /opt/PBX-ASL-Engine/asterisk/configs/modules.conf.sample /etc/asl/user2/modules.conf
+	  cp -p /opt/PBX-ASL-Engine/asterisk/configs/modules.conf.sample /etc/asl/user3/modules.conf
 
 echo "Add SSH key folders....."
                      mkdir -p /etc/asl/user1/.ssh
@@ -87,7 +86,7 @@ sleep 2
 figlet "AllStarLink'"
 sleep 2
                      cd /etc/asl
-		     docker-compose up -d
+#		     docker-compose up -d
 		     
 
 
