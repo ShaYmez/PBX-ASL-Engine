@@ -24,12 +24,12 @@ RUN wget -O - http://downloads.allstarlink.org/repos/repo_signing.key | apt-key 
 
 # Install application dependencies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    debhelper quilt zlib1g-dev libreadline-dev libgsm1-dev libssl-dev libtonezone-dev libasound2-dev libpq-dev unixodbc-dev libpri-dev libvpb-dev asl-dahdi-source autotools-dev libnewt-dev libsqlite-dev libspeex-dev libspeexdsp-dev graphviz libcurl4-openssl-dev doxygen gsfonts libpopt-dev libiksemel-dev freetds-dev libvorbis-dev libsnmp-dev libcap-dev libi2c-dev libjansson-dev libusb-dev linux-headers-5.10.0-8-amd64 \
+    debhelper quilt zlib1g-dev libreadline-dev libgsm1-dev libssl-dev libtonezone-dev libasound2-dev libpq-dev unixodbc-dev libpri-dev libvpb-dev asl-dahdi-source autotools-dev libnewt-dev libsqlite-dev libspeex-dev libspeexdsp-dev graphviz libcurl4-openssl-dev doxygen gsfonts libpopt-dev libiksemel-dev freetds-dev libvorbis-dev libsnmp-dev libcap-dev libi2c-dev libjansson-dev libusb-dev \
     --no-install-recommends
 
 RUN apt-get update -y
 
-RUN apt-get install -y linux-headers-$(uname -r) asl-asterisk allstar-helpers asl-dahdi --option=Dpkg::Options::=--force-confdef
+RUN apt-get install -y asl-asterisk allstar-helpers asl-dahdi --option=Dpkg::Options::=--force-confdef
 
 RUN apt-get update && apt-get install -y openssh-server sudo
 RUN mkdir /var/run/sshd
