@@ -41,10 +41,7 @@ systemctl restart docker
           mkdir /etc/asl/user1
           mkdir /etc/asl/user2
           mkdir /etc/asl/user3
-          mkdir /etc/asl/user1/.ssh
-          mkdir /etc/asl/user2/.ssh
-          mkdir /etc/asl/user3/.shh
-
+          
 echo Install configuration ... 
 cat << EOF > /etc/asl/user1/rpt.conf
 ; Radio Repeater configuration file (for use with app_rpt)
@@ -3461,6 +3458,22 @@ noload => res_snmp.so ;				SNMP [Sub]Agent for Asterisk
 noload => res_speech.so ;			Generic Speech Recognition API                    
 
 [global]
+EOF
+
+echo "Add SSH key folders....."
+                     mkdir /etc/asl/user1/.ssh
+cat << EOF > /etc/asl/.ssh/authorized_keys
+# Authorized keys to access individual containers with root. Add your public key to this file to gain access
+EOF
+
+                     mkdir /etc/asl/user2/.ssh
+cat << EOF > /etc/asl/.ssh/authorized_keys
+# Authorized keys to access individual containers with root. Add your public key to this file to gain access
+EOF
+
+                     mkdir /etc/asl/user3/.ssh
+cat << EOF > /etc/asl/.ssh/authorized_keys
+# Authorized keys to access individual containers with root. Add your public key to this file to gain access
 EOF
 
 sleep 3
