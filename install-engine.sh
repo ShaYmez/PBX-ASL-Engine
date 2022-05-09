@@ -19,12 +19,16 @@
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 ###############################################################################
 echo "Are we up to date?"
-         apt-get update -y
+                      apt-get update -y
 clear
 echo "Starting installer....."
 
 echo Installing required packages...
-apt-get -y install wget git docker docker-compose figlet
+                     apt-get -y install wget git docker docker-compose figlet
+
+echo "Installing repositories....."
+                     git clone https://github.com/ShaYmez/PBX-ASL-Engine.git
+		     cd /opt/PBX-ASL-Engine
 
 echo "Set userland-proxy to false..."
 echo '{ "userland-proxy": false}' > /etc/docker/daemon.json
@@ -3460,5 +3464,22 @@ noload => res_speech.so ;			Generic Speech Recognition API
 EOF
 
 sleep 3
-echo "
-echo "ASL-PBX-Engine!"
+echo "Done."
+sleep 3
+
+echo "Install docker-compose.yml
+                     cp docker-compose.yml /etc/asl/docker-compose.yml
+echo "Done"
+echo "Folder permissions?"
+                     chmod -R 755 /etc/asl
+echo "Start the containers!"
+sleep 2
+figlet "AllStarLink'"
+sleep 2
+                     cd /etc/asl
+		     docker-compose up -d
+		     
+
+
+echo "ASL-PBX-Engine is installed. Use docker compose commands to control containers!. AKA ShaYmez"
+exit 0
