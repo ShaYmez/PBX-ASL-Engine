@@ -12,6 +12,7 @@ services:
             - '/etc/asl-user1/rpt.conf:/etc/asterisk/rpt.conf'
             - '/etc/asl-user1/extensions.conf:/etc/asterisk/extensions.conf'
             - '/etc/asl-user1/iax.conf:/etc/asterisk/iax.conf'
+            - '/etc/asl-user1/modules.conf:/etc/asterisk/modules.conf'
             #Write logs files outside of container
         ports:
             #SSH Port
@@ -38,6 +39,7 @@ services:
             - '/etc/asl-user2/rpt.conf:/etc/asterisk/rpt.conf'
             - '/etc/asl-user2/extensions.conf:/etc/asterisk/extensions.conf'
             - '/etc/asl-user2/iax.conf:/etc/asterisk/iax.conf'
+            - '/etc/asl-user1/modules.conf:/etc/asterisk/modules.conf'
             #Write logs files outside of container
         ports:
             #SSH Port
@@ -64,6 +66,7 @@ services:
             - '/etc/asl-user3/rpt.conf:/etc/asterisk/rpt.conf'
             - '/etc/asl-user3/extensions.conf:/etc/asterisk/extensions.conf'
             - '/etc/asl-user3/iax.conf:/etc/asterisk/iax.conf'
+            - '/etc/asl-user1/modules.conf:/etc/asterisk/modules.conf'
             #Write logs files outside of container
         ports:
             #SSH Port
