@@ -18,13 +18,13 @@
 #   along with this program; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 ###############################################################################
-
-echo "Starting PBX-ASL-Engine installer..."
-
+echo "Are we up to date?"
          apt-get update -y
+clear
+echo "Starting installer....."
 
 echo Installing required packages...
-apt-get -y install wget git docker docker-compose 
+apt-get -y install wget git docker docker-compose figlet
 
 echo "Set userland-proxy to false..."
 echo '{ "userland-proxy": false}' > /etc/docker/daemon.json
@@ -55,7 +55,7 @@ cat << EOF > /etc/asl/user1/rpt.conf
 ; no allstar link nodes should be defined here. Only place a definition
 ; for your local nodes, and private (off of allstar link) nodes here.
 
-1999 = radio@127.0.0.1:4569/1999,NONE	; This must be changed to your node number
+1999 = radio@127.0.0.1:4585/1999,NONE	; This must be changed to your node number
                                         ; and iax port number if not the default
 
 [1999]					; Change this to your assigned node number
@@ -64,7 +64,7 @@ cat << EOF > /etc/asl/user1/rpt.conf
 					; Rx audio/signalling channel. Choose ONLY 1 per node stanza
 
 					; Enable the selected channel driver in modules.conf !!!
-: rxchannel = dahdi/pseudo	        ; No radio (hub)
+; rxchannel = dahdi/pseudo	        ; No radio (hub)
 ; rxchannel = SimpleUSB/usb_1999	; SimpleUSB
 ; rxchannel = Pi/1                      ; Raspberry Pi PiTA
 ; rxchannel = Radio/usb_1999		; USBRadio (DSP)
@@ -74,7 +74,7 @@ rxchannel = USRP/127.0.0.1:34001:32001; GNU Radio interface USRP
 ; rxchannel = Voter/1999                ; RTCM device
 
 
-duplex = 1                              ; 0 = Half duplex with no telemetry tones or hang time.
+duplex = 0                              ; 0 = Half duplex with no telemetry tones or hang time.
                                         ;     Special Case: Full duplex if linktolink is set to yes.
                                         ;     This mode is preferred when interfacing with an external multiport repeater controller.
 					;     Comment out idrecording and idtalkover to suppress IDs also
@@ -116,19 +116,19 @@ context = radio				; dialing context for phone
 callerid = "Repeater" <0000000000>	; callerid for phone calls
 accountcode = RADIO                     ; account code (optional)
 
-hangtime = 1000				; squelch tail hang time (in ms) (optional, default 5 seconds, 5000 ms)
-althangtime = 3000			; longer squelch tail
-totime = 180000				; transmit time-out time (in ms) (optional, default 3 minutes 180000 ms)
+hangtime = 0				; squelch tail hang time (in ms) (optional, default 5 seconds, 5000 ms)
+althangtime = 100			; longer squelch tail
+totime = 600000				; transmit time-out time (in ms) (optional, default 3 minutes 180000 ms)
 
-idrecording = |iWB6NIL			; cording or morse string see https://wiki.allstarlink.org/wiki/Rpt.conf#idrecording.3D
-idtalkover = |iWB6NIL                   ; Talkover ID (optional) default is none see https://wiki.allstarlink.org/wiki/Rpt.conf#idtalkover.3D
+;idrecording = |iM0JKT			; Main ID message
+;idtalkover = |iM0JKT			; Talkover ID message
 					; See Telemetry section Example: idrecording = rpt/nodenames/1999
 idtime = 540000				; id interval time (in ms) (optional) Default 5 minutes (300000 ms)
 politeid = 30000			; time in milliseconds before ID timer expires to try and ID in the tail. (optional, default 30000)
 
-unlinkedct = ct2			; Send a this courtesy tone when the user unkeys if the node is not connected to any other nodes. (optional, default is none)
-remotect = ct3				; remote linked courtesy tone (indicates a remote is in the list of links)
-linkunkeyct = ct8			; sent when a transmission received over the link unkeys
+;unlinkedct = ct2			; Send a this courtesy tone when the user unkeys if the node is not connected to any other nodes. (optional, default is none)
+;remotect = ct3				; remote linked courtesy tone (indicates a remote is in the list of links)
+;linkunkeyct = ct8			; sent when a transmission received over the link unkeys
 ;nolocallinkct = 0			; Send unlinkedct instead if another local node is connected to this node (hosted on the same PC).
 
 ; Supermon smlogger
@@ -157,14 +157,14 @@ discpgm=/usr/local/sbin/supermon/smlogger 0
 
 ;nounkeyct = 0				; Set to a 1 to eliminate courtesy tones and associated delays.
 
-holdofftelem = 0			; Hold off all telemetry when signal is present on receiver or from connected nodes
+holdofftelem = 1			; Hold off all telemetry when signal is present on receiver or from connected nodes
 					; except when an ID needs to be done and there is a signal coming from a connected node.
 
-telemdefault = 1                        ; 0 = telemetry output off
+telemdefault = 0                        ; 0 = telemetry output off
                                         ; 1 = telemetry output on (default = 1)
                                         ; 2 = timed telemetry output on command execution and for a short time thereafter.
 
-telemdynamic = 1                        ; 0 = disallow users to change the local telemetry setting with a COP command,
+telemdynamic = 0                        ; 0 = disallow users to change the local telemetry setting with a COP command,
                                         ; 1 = Allow users to change the setting with a COP command. (default = 1)
 
 ;beaconing = 0				; Send ID regardless of repeater activity (Required in the UK, but probably illegal in the US)
@@ -258,6 +258,23 @@ statpost_url = http://stats.allstarlink.org/uhandler ; Status updates
 ; *C		User Functions
 ; *D		User Functions
 
+;;;;;;;;;;;;;;;;;;;;;;
+;DVSwitch DTMF Commands
+;;;;;;;;;;;;;;;;;;;;;;
+
+00 = cmd, /opt/MMDVM_Bridge/disconnecter.sh 						; Unlink from last TG / reflector
+01 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode DMR	; Enable DMR
+02 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode YSF	; Enable YSF
+03 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode P25	; Enable P25
+04 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode NXDN 	; Enable NXDN
+05 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode DSTAR	; Enable DSTAR
+;06 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
+;07 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
+;08 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
+09=autopatchup,context=tgtune,dialtime=90000,farenddisconnect=1,noct,quiet=1		; Change Talkgroup / Refelector
+888 = cmd, /usr/local/dvs/88_restart.sh							; Restart DVSwitch Services
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Mandatory Command Codes
 1 = ilink,1		; Disconnect specified link
@@ -698,7 +715,7 @@ cat << EOF > /etc/asl/user2/rpt.conf
 ; no allstar link nodes should be defined here. Only place a definition
 ; for your local nodes, and private (off of allstar link) nodes here.
 
-1999 = radio@127.0.0.1:4569/1999,NONE	; This must be changed to your node number
+1999 = radio@127.0.0.1:4585/1999,NONE	; This must be changed to your node number
                                         ; and iax port number if not the default
 
 [1999]					; Change this to your assigned node number
@@ -707,7 +724,7 @@ cat << EOF > /etc/asl/user2/rpt.conf
 					; Rx audio/signalling channel. Choose ONLY 1 per node stanza
 
 					; Enable the selected channel driver in modules.conf !!!
-: rxchannel = dahdi/pseudo	        ; No radio (hub)
+; rxchannel = dahdi/pseudo	        ; No radio (hub)
 ; rxchannel = SimpleUSB/usb_1999	; SimpleUSB
 ; rxchannel = Pi/1                      ; Raspberry Pi PiTA
 ; rxchannel = Radio/usb_1999		; USBRadio (DSP)
@@ -717,7 +734,7 @@ rxchannel = USRP/127.0.0.1:34001:32001; GNU Radio interface USRP
 ; rxchannel = Voter/1999                ; RTCM device
 
 
-duplex = 1                              ; 0 = Half duplex with no telemetry tones or hang time.
+duplex = 0                              ; 0 = Half duplex with no telemetry tones or hang time.
                                         ;     Special Case: Full duplex if linktolink is set to yes.
                                         ;     This mode is preferred when interfacing with an external multiport repeater controller.
 					;     Comment out idrecording and idtalkover to suppress IDs also
@@ -759,19 +776,19 @@ context = radio				; dialing context for phone
 callerid = "Repeater" <0000000000>	; callerid for phone calls
 accountcode = RADIO                     ; account code (optional)
 
-hangtime = 1000				; squelch tail hang time (in ms) (optional, default 5 seconds, 5000 ms)
-althangtime = 3000			; longer squelch tail
-totime = 180000				; transmit time-out time (in ms) (optional, default 3 minutes 180000 ms)
+hangtime = 0				; squelch tail hang time (in ms) (optional, default 5 seconds, 5000 ms)
+althangtime = 100			; longer squelch tail
+totime = 600000				; transmit time-out time (in ms) (optional, default 3 minutes 180000 ms)
 
-idrecording = |iWB6NIL			; cording or morse string see https://wiki.allstarlink.org/wiki/Rpt.conf#idrecording.3D
-idtalkover = |iWB6NIL                   ; Talkover ID (optional) default is none see https://wiki.allstarlink.org/wiki/Rpt.conf#idtalkover.3D
+;idrecording = |iM0JKT			; Main ID message
+;idtalkover = |iM0JKT			; Talkover ID message
 					; See Telemetry section Example: idrecording = rpt/nodenames/1999
 idtime = 540000				; id interval time (in ms) (optional) Default 5 minutes (300000 ms)
 politeid = 30000			; time in milliseconds before ID timer expires to try and ID in the tail. (optional, default 30000)
 
-unlinkedct = ct2			; Send a this courtesy tone when the user unkeys if the node is not connected to any other nodes. (optional, default is none)
-remotect = ct3				; remote linked courtesy tone (indicates a remote is in the list of links)
-linkunkeyct = ct8			; sent when a transmission received over the link unkeys
+;unlinkedct = ct2			; Send a this courtesy tone when the user unkeys if the node is not connected to any other nodes. (optional, default is none)
+;remotect = ct3				; remote linked courtesy tone (indicates a remote is in the list of links)
+;linkunkeyct = ct8			; sent when a transmission received over the link unkeys
 ;nolocallinkct = 0			; Send unlinkedct instead if another local node is connected to this node (hosted on the same PC).
 
 ; Supermon smlogger
@@ -800,14 +817,14 @@ discpgm=/usr/local/sbin/supermon/smlogger 0
 
 ;nounkeyct = 0				; Set to a 1 to eliminate courtesy tones and associated delays.
 
-holdofftelem = 0			; Hold off all telemetry when signal is present on receiver or from connected nodes
+holdofftelem = 1			; Hold off all telemetry when signal is present on receiver or from connected nodes
 					; except when an ID needs to be done and there is a signal coming from a connected node.
 
-telemdefault = 1                        ; 0 = telemetry output off
+telemdefault = 0                        ; 0 = telemetry output off
                                         ; 1 = telemetry output on (default = 1)
                                         ; 2 = timed telemetry output on command execution and for a short time thereafter.
 
-telemdynamic = 1                        ; 0 = disallow users to change the local telemetry setting with a COP command,
+telemdynamic = 0                        ; 0 = disallow users to change the local telemetry setting with a COP command,
                                         ; 1 = Allow users to change the setting with a COP command. (default = 1)
 
 ;beaconing = 0				; Send ID regardless of repeater activity (Required in the UK, but probably illegal in the US)
@@ -901,6 +918,23 @@ statpost_url = http://stats.allstarlink.org/uhandler ; Status updates
 ; *C		User Functions
 ; *D		User Functions
 
+;;;;;;;;;;;;;;;;;;;;;;
+;DVSwitch DTMF Commands
+;;;;;;;;;;;;;;;;;;;;;;
+
+00 = cmd, /opt/MMDVM_Bridge/disconnecter.sh 						; Unlink from last TG / reflector
+01 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode DMR	; Enable DMR
+02 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode YSF	; Enable YSF
+03 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode P25	; Enable P25
+04 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode NXDN 	; Enable NXDN
+05 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode DSTAR	; Enable DSTAR
+;06 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
+;07 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
+;08 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
+09=autopatchup,context=tgtune,dialtime=90000,farenddisconnect=1,noct,quiet=1		; Change Talkgroup / Refelector
+888 = cmd, /usr/local/dvs/88_restart.sh							; Restart DVSwitch Services
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Mandatory Command Codes
 1 = ilink,1		; Disconnect specified link
@@ -1341,7 +1375,7 @@ cat << EOF > /etc/asl/user3/rpt.conf
 ; no allstar link nodes should be defined here. Only place a definition
 ; for your local nodes, and private (off of allstar link) nodes here.
 
-1999 = radio@127.0.0.1:4569/1999,NONE	; This must be changed to your node number
+1999 = radio@127.0.0.1:4585/1999,NONE	; This must be changed to your node number
                                         ; and iax port number if not the default
 
 [1999]					; Change this to your assigned node number
@@ -1350,7 +1384,7 @@ cat << EOF > /etc/asl/user3/rpt.conf
 					; Rx audio/signalling channel. Choose ONLY 1 per node stanza
 
 					; Enable the selected channel driver in modules.conf !!!
-: rxchannel = dahdi/pseudo	        ; No radio (hub)
+; rxchannel = dahdi/pseudo	        ; No radio (hub)
 ; rxchannel = SimpleUSB/usb_1999	; SimpleUSB
 ; rxchannel = Pi/1                      ; Raspberry Pi PiTA
 ; rxchannel = Radio/usb_1999		; USBRadio (DSP)
@@ -1360,7 +1394,7 @@ rxchannel = USRP/127.0.0.1:34001:32001; GNU Radio interface USRP
 ; rxchannel = Voter/1999                ; RTCM device
 
 
-duplex = 1                              ; 0 = Half duplex with no telemetry tones or hang time.
+duplex = 0                              ; 0 = Half duplex with no telemetry tones or hang time.
                                         ;     Special Case: Full duplex if linktolink is set to yes.
                                         ;     This mode is preferred when interfacing with an external multiport repeater controller.
 					;     Comment out idrecording and idtalkover to suppress IDs also
@@ -1402,19 +1436,19 @@ context = radio				; dialing context for phone
 callerid = "Repeater" <0000000000>	; callerid for phone calls
 accountcode = RADIO                     ; account code (optional)
 
-hangtime = 1000				; squelch tail hang time (in ms) (optional, default 5 seconds, 5000 ms)
-althangtime = 3000			; longer squelch tail
-totime = 180000				; transmit time-out time (in ms) (optional, default 3 minutes 180000 ms)
+hangtime = 0				; squelch tail hang time (in ms) (optional, default 5 seconds, 5000 ms)
+althangtime = 100			; longer squelch tail
+totime = 600000				; transmit time-out time (in ms) (optional, default 3 minutes 180000 ms)
 
-idrecording = |iWB6NIL			; cording or morse string see https://wiki.allstarlink.org/wiki/Rpt.conf#idrecording.3D
-idtalkover = |iWB6NIL                   ; Talkover ID (optional) default is none see https://wiki.allstarlink.org/wiki/Rpt.conf#idtalkover.3D
+;idrecording = |iM0JKT			; Main ID message
+;idtalkover = |iM0JKT			; Talkover ID message
 					; See Telemetry section Example: idrecording = rpt/nodenames/1999
 idtime = 540000				; id interval time (in ms) (optional) Default 5 minutes (300000 ms)
 politeid = 30000			; time in milliseconds before ID timer expires to try and ID in the tail. (optional, default 30000)
 
-unlinkedct = ct2			; Send a this courtesy tone when the user unkeys if the node is not connected to any other nodes. (optional, default is none)
-remotect = ct3				; remote linked courtesy tone (indicates a remote is in the list of links)
-linkunkeyct = ct8			; sent when a transmission received over the link unkeys
+;unlinkedct = ct2			; Send a this courtesy tone when the user unkeys if the node is not connected to any other nodes. (optional, default is none)
+;remotect = ct3				; remote linked courtesy tone (indicates a remote is in the list of links)
+;linkunkeyct = ct8			; sent when a transmission received over the link unkeys
 ;nolocallinkct = 0			; Send unlinkedct instead if another local node is connected to this node (hosted on the same PC).
 
 ; Supermon smlogger
@@ -1443,14 +1477,14 @@ discpgm=/usr/local/sbin/supermon/smlogger 0
 
 ;nounkeyct = 0				; Set to a 1 to eliminate courtesy tones and associated delays.
 
-holdofftelem = 0			; Hold off all telemetry when signal is present on receiver or from connected nodes
+holdofftelem = 1			; Hold off all telemetry when signal is present on receiver or from connected nodes
 					; except when an ID needs to be done and there is a signal coming from a connected node.
 
-telemdefault = 1                        ; 0 = telemetry output off
+telemdefault = 0                        ; 0 = telemetry output off
                                         ; 1 = telemetry output on (default = 1)
                                         ; 2 = timed telemetry output on command execution and for a short time thereafter.
 
-telemdynamic = 1                        ; 0 = disallow users to change the local telemetry setting with a COP command,
+telemdynamic = 0                        ; 0 = disallow users to change the local telemetry setting with a COP command,
                                         ; 1 = Allow users to change the setting with a COP command. (default = 1)
 
 ;beaconing = 0				; Send ID regardless of repeater activity (Required in the UK, but probably illegal in the US)
@@ -1544,6 +1578,23 @@ statpost_url = http://stats.allstarlink.org/uhandler ; Status updates
 ; *C		User Functions
 ; *D		User Functions
 
+;;;;;;;;;;;;;;;;;;;;;;
+;DVSwitch DTMF Commands
+;;;;;;;;;;;;;;;;;;;;;;
+
+00 = cmd, /opt/MMDVM_Bridge/disconnecter.sh 						; Unlink from last TG / reflector
+01 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode DMR	; Enable DMR
+02 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode YSF	; Enable YSF
+03 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode P25	; Enable P25
+04 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode NXDN 	; Enable NXDN
+05 = cmd, /opt/MMDVM_Bridge/disconnecter.sh && /opt/MMDVM_Bridge/dvswitch.sh mode DSTAR	; Enable DSTAR
+;06 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
+;07 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
+;08 = cmd, /opt/MMDVM_Bridge/dvswitch.sh 						; unused
+09=autopatchup,context=tgtune,dialtime=90000,farenddisconnect=1,noct,quiet=1		; Change Talkgroup / Refelector
+888 = cmd, /usr/local/dvs/88_restart.sh							; Restart DVSwitch Services
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Mandatory Command Codes
 1 = ilink,1		; Disconnect specified link
@@ -1970,5 +2021,7 @@ calltermwait = 2000                     ; Time to wait before announcing "call t
 
 #includeifexists custom/rpt.conf
 EOF
+
+
 
 echo "ASL-PBX-Engine!"
