@@ -9,13 +9,13 @@ services:
         mem_reservation: 300m
         volumes:
             #Write Asterisk configuration outside container
-            - '/etc/asl-user1/rpt.conf:/etc/asterisk/rpt.conf'
-            - '/etc/asl-user1/extensions.conf:/etc/asterisk/extensions.conf'
-            - '/etc/asl-user1/iax.conf:/etc/asterisk/iax.conf'
-            - '/etc/asl-user1/modules.conf:/etc/asterisk/modules.conf'
+            - '/etc/asl/user1/rpt.conf:/etc/asterisk/rpt.conf'
+            - '/etc/asl/user1/extensions.conf:/etc/asterisk/extensions.conf'
+            - '/etc/asl/user1/iax.conf:/etc/asterisk/iax.conf'
+            - '/etc/asl/user1/modules.conf:/etc/asterisk/modules.conf'
             #Write logs files outside of container
             #SSH Authentication
-            - '/etc/asl-user1/.ssh/authorized_keys:/root/.ssh/authroized_keys'
+            - '/etc/asl/user1/.ssh/authorized_keys:/root/.ssh/authroized_keys'
         ports:
             #SSH Port
             - '2221:22/tcp'
@@ -38,12 +38,12 @@ services:
         mem_reservation: 300m
         volumes:
             #Write Asterisk configuration outside container
-            - '/etc/asl-user2/rpt.conf:/etc/asterisk/rpt.conf'
-            - '/etc/asl-user2/extensions.conf:/etc/asterisk/extensions.conf'
-            - '/etc/asl-user2/iax.conf:/etc/asterisk/iax.conf'
-            - '/etc/asl-user1/modules.conf:/etc/asterisk/modules.conf'
+            - '/etc/asl/user2/rpt.conf:/etc/asterisk/rpt.conf'
+            - '/etc/asl/user2/extensions.conf:/etc/asterisk/extensions.conf'
+            - '/etc/asl/user2/iax.conf:/etc/asterisk/iax.conf'
+            - '/etc/asl/user1/modules.conf:/etc/asterisk/modules.conf'
             #SSH Authentication
-            - '/etc/asl-user2/.ssh/authorized_keys:/root/.ssh/authroized_keys'
+            - '/etc/asl/user2/.ssh/authorized_keys:/root/.ssh/authroized_keys'
             #Write logs files outside of container
         ports:
             #SSH Port
@@ -67,12 +67,12 @@ services:
         mem_reservation: 300m
         volumes:
             #Write Asterisk configuration outside container
-            - '/etc/asl-user3/rpt.conf:/etc/asterisk/rpt.conf'
-            - '/etc/asl-user3/extensions.conf:/etc/asterisk/extensions.conf'
-            - '/etc/asl-user3/iax.conf:/etc/asterisk/iax.conf'
-            - '/etc/asl-user1/modules.conf:/etc/asterisk/modules.conf'
+            - '/etc/asl/user3/rpt.conf:/etc/asterisk/rpt.conf'
+            - '/etc/asl/user3/extensions.conf:/etc/asterisk/extensions.conf'
+            - '/etc/asl/user3/iax.conf:/etc/asterisk/iax.conf'
+            - '/etc/asl/user1/modules.conf:/etc/asterisk/modules.conf'
             #SSH Authentication
-            - '/etc/asl-user3/.ssh/authorized_keys:/root/.ssh/authroized_keys'
+            - '/etc/asl/user3/.ssh/authorized_keys:/root/.ssh/authroized_keys'
             #Write logs files outside of container
         ports:
             #SSH Port
