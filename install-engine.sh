@@ -685,32 +685,6 @@ calltermwait = 2000                     ; Time to wait before announcing "call t
 #includeifexists custom/rpt.conf
 EOF
 
-echo Install rules.py ...
-echo "BRIDGES = {'9990': [{'SYSTEM': 'ECHO', 'TS': 2, 'TGID': 9990, 'ACTIVE': True, 'TIMEOUT': 2, 'TO_TYPE': 'NONE', 'ON': [], 'OFF': [], 'RESET': []},]}" > /etc/freedmr/rules.py &&
-
-echo Set perms on config directory...
-chown -R 54000 /etc/freedmr &&
-
-echo Setup logging...
-mkdir -p /var/log/freedmr &&
-touch /var/log/freedmr/freedmr.log &&
-chown -R 54000 /var/log/freedmr &&
-mkdir -p /var/log/FreeDMRmonitor &&
-touch /var/log/FreeDMRmonitor/lastheard.log &&
-touch /var/log/FreeDMRmonitor/hbmon.log &&
-chown -R 54001 /var/log/FreeDMRmonitor &&
-
-echo Get docker-compose.yml...
-cd /etc/freedmr &&
-curl https://gitlab.hacknix.net/hacknix/FreeDMR/-/raw/master/docker-configs/docker-compose.yml -o docker-compose.yml &&
-echo Install crontab...
-cat << EOF > /etc/cron.daily/lastheard
-#!/bin/bash
-mv /var/log/FreeDMRmonitor/lastheard.log /var/log/FreeDMRmonitor/lastheard.log.save
-/usr/bin/tail -150 /var/log/FreeDMRmonitor/lastheard.log.save > /var/log/FreeDMRmonitor/lastheard.log
-mv /var/log/FreeDMRmonitor/lastheard.log /var/log/FreeDMRmonitor/lastheard.log.save
-/usr/bin/tail -150 /var/log/FreeDMRmonitor/lastheard.log.save > /var/log/FreeDMRmonitor/lastheard.log
-EOF
 
 
 
